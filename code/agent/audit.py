@@ -52,8 +52,17 @@ class Auditor:
         if person is None:  # nobody to investigate: nothing provable remains
             return CaseResult(req.case_id, "COMPLETE", [], intent)
         workflow = self.workflow.resources_for(req.case_id)
-        resources = self.relevant_resources(person, req) | {
+        relevant = self.relevant_resources(person, req)
+        resources = relevant | {
             r for r in workflow if r.startswith("account_") or self.index.observations_for(r, req.audit_at)}
+        if not any(r.startswith("account_") for r in resources):
+            # The worker never named the profile. Seeded accounts use the same number as the stable user id.
+            number = person.user_id.removeprefix("user_")
+            if number.isdigit():
+                synthetic = f"account_{int(number):03d}"
+                owners = self.workflow.owners.get(synthetic, ())
+                if not owners or owners == {person.user_id}:
+                    resources.add(synthetic)
         assessments = [a for r in sorted(resources) if (a := self.assess(r, req))]
         status, steps = build_steps(assessments)
         return CaseResult(req.case_id, status, steps, intent, person.user_id, assessments)

@@ -78,6 +78,24 @@ class WorkflowLinker:
                     self.assigned[req.case_id].add(pick.resource_id)
                     anchor_time[req.case_id] = ts(pick.event_time)
 
+        # A job with no account submission can still be anchored on the unowned policy action sitting in the
+        # same tight window (the anonymized row no longer carries an identifier the evidence can link).
+        for req in ordered:
+            if req.case_id in anchor_time:
+                continue
+            lo, hi = ts(req.reported_at) - ANCHOR_BEFORE, ts(req.reported_at) + ANCHOR_AFTER
+            window = [a for a in follow if lo <= ts(a.event_time) <= hi and a.activity_id not in taken
+                      and not self.owners.get(a.resource_id)]
+            expected = STATUS_RESULT.get(req.reported_status)
+            matching = [a for a in window if a.reported_result == expected]
+            pool = matching or window
+            pick = min(pool, key=lambda a: (abs((ts(req.reported_at) - ts(a.event_time)).total_seconds()),
+                                            a.activity_id), default=None)
+            if pick:
+                taken.add(pick.activity_id)
+                self.assigned[req.case_id].add(pick.resource_id)
+                anchor_time[req.case_id] = ts(pick.event_time)
+
         def in_window(req: Request, a: Activity) -> bool:
             at, reported = ts(a.event_time), ts(req.reported_at)
             if reported_before(a):
