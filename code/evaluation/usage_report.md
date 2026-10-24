@@ -17,26 +17,27 @@ Everything else (identity resolution, evidence parsing, point-in-time state, pol
 | Metric | Value |
 |---|---|
 | Requests processed | 518 |
-| Model calls | 366 |
-| Cache hits (calls avoided) | {'intent': 152} |
-| Input tokens | 106,593 (cached: 0) |
-| Output tokens | 0 |
-| Total tokens | 106,593 |
-| Average tokens per request | 205.8 |
-| Estimated total cost | $0.010659 |
-| Estimated cost per request | $0.00002058 |
+| Model calls | 390 |
+| Cache hits (calls avoided) | {'intent': 143} |
+| Input tokens | 144,267 (cached: 0) |
+| Output tokens | 9,731 |
+| Total tokens | 153,998 |
+| Average tokens per request | 297.3 |
+| Estimated total cost | $0.019292 |
+| Estimated cost per request | $0.00003724 |
 
 ## Per model
 
 | Provider | Model | Purposes | Calls | Input tokens | Output tokens | Total tokens | Cost (USD) |
 |---|---|---|---|---|---|---|---|
-| OpenAI | `gpt-6-luna` | intent | 366 | 106,593 | 0 | 106,593 | $0.010659 |
+| OpenAI | `gpt-6-luna` | intent, vision | 390 | 144,267 | 9,731 | 153,998 | $0.019292 |
 
 ## Per purpose
 
 | Purpose | Calls | Input tokens | Output tokens |
 |---|---|---|---|
-| intent | 366 | 106,593 | 0 |
+| intent | 375 | 109,253 | 0 |
+| vision | 15 | 35,014 | 9,731 |
 
 ## Pricing used
 

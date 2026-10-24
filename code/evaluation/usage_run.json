@@ -1,17 +1,3151 @@
 {
-  "calls": [],
+  "calls": [
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 3119,
+      "model": "gpt-6-luna",
+      "output_tokens": 845,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 2914,
+      "model": "gpt-6-luna",
+      "output_tokens": 616,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 2982,
+      "model": "gpt-6-luna",
+      "output_tokens": 749,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 734,
+      "model": "gpt-6-luna",
+      "output_tokens": 815,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 2982,
+      "model": "gpt-6-luna",
+      "output_tokens": 265,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 2914,
+      "model": "gpt-6-luna",
+      "output_tokens": 528,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 863,
+      "model": "gpt-6-luna",
+      "output_tokens": 741,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 3119,
+      "model": "gpt-6-luna",
+      "output_tokens": 636,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 2982,
+      "model": "gpt-6-luna",
+      "output_tokens": 747,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 2914,
+      "model": "gpt-6-luna",
+      "output_tokens": 1018,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 2914,
+      "model": "gpt-6-luna",
+      "output_tokens": 542,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 2982,
+      "model": "gpt-6-luna",
+      "output_tokens": 1159,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 693,
+      "model": "gpt-6-luna",
+      "output_tokens": 338,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 747,
+      "model": "gpt-6-luna",
+      "output_tokens": 539,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 2155,
+      "model": "gpt-6-luna",
+      "output_tokens": 193,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_33",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_34",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_35",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_36",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_37",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_38",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_39",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_40",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_41",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_42",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_43",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_44",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_45",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_46",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_47",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_49",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_50",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_51",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_52",
+      "input_tokens": 297,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_53",
+      "input_tokens": 287,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_54",
+      "input_tokens": 299,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_55",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_56",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_58",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_59",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_60",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_61",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_62",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_63",
+      "input_tokens": 287,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_64",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_65",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_66",
+      "input_tokens": 301,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_67",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_68",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_69",
+      "input_tokens": 297,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_70",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_71",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_72",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_74",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_75",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_76",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_77",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_78",
+      "input_tokens": 320,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_79",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_80",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_81",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_82",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_83",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_84",
+      "input_tokens": 303,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_85",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_86",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_87",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_88",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_89",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_90",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_91",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_92",
+      "input_tokens": 296,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_94",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_95",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_96",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_97",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_98",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_99",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_100",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_102",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_103",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_104",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_106",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_107",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_109",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_110",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_111",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_112",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_113",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_114",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_115",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_116",
+      "input_tokens": 296,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_118",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_119",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_120",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_121",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_122",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_124",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_125",
+      "input_tokens": 298,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_126",
+      "input_tokens": 297,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_127",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_128",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_129",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_130",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_131",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_133",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_134",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_135",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_138",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_139",
+      "input_tokens": 287,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_140",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_141",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_142",
+      "input_tokens": 297,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_143",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_145",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_146",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_148",
+      "input_tokens": 296,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_150",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_151",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_152",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_154",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_155",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_157",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_158",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_160",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_161",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_163",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_164",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_165",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_166",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_167",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_168",
+      "input_tokens": 296,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_169",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_170",
+      "input_tokens": 287,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_172",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_173",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_174",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_175",
+      "input_tokens": 287,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_176",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_177",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_178",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_179",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_180",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_181",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_182",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_184",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_185",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_187",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_188",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_189",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_191",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_192",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_193",
+      "input_tokens": 296,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_194",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_196",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_197",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_200",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_202",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_203",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_204",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_206",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_207",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_209",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_211",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_212",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_213",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_214",
+      "input_tokens": 286,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_215",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_218",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_219",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_220",
+      "input_tokens": 298,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_221",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_223",
+      "input_tokens": 287,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_224",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_226",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_227",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_228",
+      "input_tokens": 287,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_229",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_232",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_233",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_236",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_237",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_238",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_239",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_241",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_242",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_243",
+      "input_tokens": 287,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_245",
+      "input_tokens": 296,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_246",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_247",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_248",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_250",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_251",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_253",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_254",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_255",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_260",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_262",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_263",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_265",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_266",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_267",
+      "input_tokens": 296,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_268",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_272",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_274",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_275",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_276",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_277",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_278",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_282",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_283",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_284",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_286",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_287",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_289",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_290",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_291",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_292",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_293",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_294",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_295",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_296",
+      "input_tokens": 286,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_297",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_298",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_299",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_301",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_304",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_306",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_307",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_308",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_309",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_310",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_311",
+      "input_tokens": 296,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_313",
+      "input_tokens": 296,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_314",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_315",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_317",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_319",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_320",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_321",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_322",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_323",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_324",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_325",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_326",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_328",
+      "input_tokens": 285,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_329",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_330",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_331",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_334",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_335",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_337",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_338",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_341",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_343",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_344",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_345",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_346",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_347",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_349",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_350",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_352",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_354",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_355",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_358",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_359",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_362",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_363",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_365",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_367",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_368",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_369",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_371",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_372",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_373",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_374",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_375",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_377",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_382",
+      "input_tokens": 287,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_383",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_384",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_385",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_387",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_388",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_391",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_392",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_393",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_394",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_395",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_397",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_399",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_400",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_403",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_406",
+      "input_tokens": 287,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_409",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_410",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_411",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_412",
+      "input_tokens": 298,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_414",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_415",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_416",
+      "input_tokens": 287,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_418",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_421",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_422",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_423",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_424",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_425",
+      "input_tokens": 296,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_426",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_427",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_428",
+      "input_tokens": 296,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_431",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_433",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_434",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_436",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_437",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_438",
+      "input_tokens": 298,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_439",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_441",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_442",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_443",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_446",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_447",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_448",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_449",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_450",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_452",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_453",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_455",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_457",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_458",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_460",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_461",
+      "input_tokens": 287,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_462",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_464",
+      "input_tokens": 296,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_466",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_470",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_471",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_473",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_475",
+      "input_tokens": 286,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_477",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_478",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_479",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_480",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_481",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_482",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_485",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_486",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_487",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_491",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_492",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_493",
+      "input_tokens": 286,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_494",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_496",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_497",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_499",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_500",
+      "input_tokens": 296,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_501",
+      "input_tokens": 296,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_503",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_504",
+      "input_tokens": 299,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_506",
+      "input_tokens": 298,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_508",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_509",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_510",
+      "input_tokens": 294,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_511",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_515",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_517",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_518",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_519",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_520",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_521",
+      "input_tokens": 293,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_525",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_526",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_528",
+      "input_tokens": 288,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_529",
+      "input_tokens": 295,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_530",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_531",
+      "input_tokens": 291,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_533",
+      "input_tokens": 280,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_534",
+      "input_tokens": 280,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_535",
+      "input_tokens": 276,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_536",
+      "input_tokens": 274,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_537",
+      "input_tokens": 277,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_538",
+      "input_tokens": 275,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_539",
+      "input_tokens": 281,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_540",
+      "input_tokens": 278,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_541",
+      "input_tokens": 274,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_542",
+      "input_tokens": 283,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_543",
+      "input_tokens": 290,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_544",
+      "input_tokens": 292,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_547",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": "case_548",
+      "input_tokens": 289,
+      "model": "gpt-6-luna",
+      "output_tokens": 0,
+      "purpose": "intent"
+    }
+  ],
   "summary": {
-    "avg_cost_per_request_usd": 0.0,
-    "avg_tokens_per_request": 0.0,
+    "avg_cost_per_request_usd": 3.724362934362935e-05,
+    "avg_tokens_per_request": 297.2934362934363,
     "cache_hits": {
-      "intent": 1
+      "intent": 143
     },
     "cached_input_tokens": 0,
-    "cost_usd": 0,
-    "input_tokens": 0,
-    "model_calls": 0,
-    "output_tokens": 0,
-    "per_model": {},
+    "cost_usd": 0.019292200000000002,
+    "input_tokens": 144267,
+    "model_calls": 390,
+    "output_tokens": 9731,
+    "per_model": {
+      "gpt-6-luna": {
+        "cached_tokens": 0,
+        "calls": 390,
+        "cost_usd": 0.019292199999999995,
+        "input_tokens": 144267,
+        "output_tokens": 9731,
+        "purposes": [
+          "intent",
+          "vision"
+        ],
+        "total_tokens": 153998
+      }
+    },
     "pricing_usd_per_1m_tokens": {
       "gpt-6-luna": {
         "cached_input": 0.01,
@@ -20,7 +3154,7 @@
       }
     },
     "provider": "OpenAI",
-    "requests": 1,
-    "total_tokens": 0
+    "requests": 518,
+    "total_tokens": 153998
   }
 }

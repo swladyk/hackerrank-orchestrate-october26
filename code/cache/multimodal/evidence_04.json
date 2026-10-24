@@ -1,5 +1,5 @@
 {
-  "artifact_title": "Customer Operations — Haruka Sato",
+  "artifact_title": "Haruka Sato — Customer Operations",
   "file_id": "evidence_04",
   "method": "llm:gpt-6-luna",
   "records": [
@@ -28,7 +28,7 @@
       "email": null,
       "email_hash": null,
       "enabled": null,
-      "name": "Haruka Sato",
+      "name": null,
       "observed_at": null,
       "phone": null,
       "record_kind": "other",
@@ -39,14 +39,14 @@
       ],
       "restore_allowed": null,
       "retention_until": null,
-      "status": "Delivered · 18 Sep",
-      "user_ref": "user_11"
+      "status": "Delivered",
+      "user_ref": null
     },
     {
       "email": null,
       "email_hash": null,
       "enabled": null,
-      "name": "Haruka Sato",
+      "name": null,
       "observed_at": null,
       "phone": null,
       "record_kind": "other",
@@ -57,14 +57,14 @@
       ],
       "restore_allowed": null,
       "retention_until": null,
-      "status": "Returned · 03 Sep",
-      "user_ref": "user_11"
+      "status": "Returned",
+      "user_ref": null
     },
     {
       "email": null,
       "email_hash": null,
       "enabled": null,
-      "name": "Haruka Sato",
+      "name": null,
       "observed_at": null,
       "phone": null,
       "record_kind": "support_message",
@@ -77,7 +77,7 @@
       "restore_allowed": null,
       "retention_until": null,
       "status": null,
-      "user_ref": "user_11"
+      "user_ref": null
     }
   ]
 }

@@ -38,12 +38,13 @@
       "email_hash": null,
       "enabled": null,
       "name": null,
-      "observed_at": null,
+      "observed_at": "2026-04-26T02:00:00Z",
       "phone": null,
       "record_kind": "backup_archive",
       "reference": "backup_9287",
       "related_references": [
-        "s3://northstar-backups/customer-platform/weekly/segment-42-20260426.tar.zst"
+        "backup_9286",
+        "backup_9281"
       ],
       "restore_allowed": null,
       "retention_until": "2026-07-26",

@@ -1,5 +1,5 @@
 {
-  "artifact_title": "CS-5034 · Where is my delivery?",
+  "artifact_title": "Helpline Console — CS-5034: Where is my delivery?",
   "file_id": "evidence_28",
   "method": "llm:gpt-6-luna",
   "records": [
@@ -23,10 +23,10 @@
       "user_ref": null
     },
     {
-      "email": null,
+      "email": "kagyeman8947@fastmail.com",
       "email_hash": null,
       "enabled": null,
-      "name": null,
+      "name": "Kofi Agyeman",
       "observed_at": null,
       "phone": null,
       "record_kind": "other",
