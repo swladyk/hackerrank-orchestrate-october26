@@ -1,0 +1,24 @@
+{
+  "calls": [],
+  "summary": {
+    "avg_cost_per_request_usd": 0.0,
+    "avg_tokens_per_request": 0.0,
+    "cache_hits": {},
+    "cached_input_tokens": 0,
+    "cost_usd": 0,
+    "input_tokens": 0,
+    "model_calls": 0,
+    "output_tokens": 0,
+    "per_model": {},
+    "pricing_usd_per_1m_tokens": {
+      "gpt-6-luna": {
+        "cached_input": 0.01,
+        "input": 0.1,
+        "output": 0.5
+      }
+    },
+    "provider": "OpenAI",
+    "requests": 518,
+    "total_tokens": 0
+  }
+}
