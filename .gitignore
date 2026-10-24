@@ -1,0 +1,10 @@
+.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+code.zip
+output_subset.csv
+code/evaluation/*.usage.json
+code/evaluation/custom_cases/*.usage.json
+code/evaluation/usage_run_subset.json

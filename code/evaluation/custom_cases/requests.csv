@@ -1,0 +1,5 @@
+case_id,email,requested_at,reported_status,reported_at,audit_at,request_text
+custom_01,camille.bernard@outlook.com,2026-08-26T12:00:00Z,COMPLETE,2026-08-27T12:00:00Z,2026-09-15T12:00:00Z,"I was told the account had been deleted, but I can still find traces in search, support, and analytics. Please handle them and disable any synchronization that could recreate them."
+custom_02,leila.haddad@yahoo.com,2026-08-27T14:17:00Z,COMPLETE,2026-08-28T09:03:00Z,2026-09-08T13:40:00Z,"Bonjour, pourriez-vous m'envoyer une copie des données liées à mon compte ? Je l'utilise encore, merci de ne rien supprimer."
+custom_03,addo.kofi@gmail.com,2026-09-03T12:00:00Z,PARTIALLY_COMPLETE,2026-09-06T12:00:00Z,2026-09-15T11:59:00Z,"The account itself is gone, but an internal deleted-account record still shows my personal details. Please keep only the reference needed for retained records and remove the rest."
+custom_04,noor-khalil@proton.me,2026-09-08T12:00:00Z,NOT_STARTED,2026-09-09T12:00:00Z,2026-10-01T12:00:00Z,このメールアドレスに紐づくアカウントと個人データをすべて削除してください。完了したら連絡をお願いします。
