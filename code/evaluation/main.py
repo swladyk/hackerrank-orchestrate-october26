@@ -1,10 +1,10 @@
 """Score predictions against labelled answers (sample_output.csv and our custom cases).
 
 Usage:
-    python code/evaluation/main.py                       # run the agent on the 32 samples (+ custom cases) and score
-    python code/evaluation/main.py --pred sample_pred.csv --gold dataset/sample_output.csv
-    python code/evaluation/main.py --verbose             # per-case diff
-    python code/evaluation/main.py --write-report        # refresh the metrics block in evaluation_report.md
+    uv run code/evaluation/main.py                       # run the agent on the 32 samples (+ custom cases) and score
+    uv run code/evaluation/main.py --pred sample_pred.csv --gold dataset/sample_output.csv
+    uv run code/evaluation/main.py --verbose             # per-case diff
+    uv run code/evaluation/main.py --write-report        # refresh the metrics block in evaluation_report.md
 """
 
 from __future__ import annotations

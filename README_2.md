@@ -24,21 +24,23 @@ Everything else is deterministic Python.
 
 ## 2. Prerequisites
 
-* Python **3.11+** (developed on 3.14)
+* [**uv**](https://docs.astral.sh/uv/) — manages the Python version, the virtual environment and the
+  dependencies (install: `curl -LsSf https://astral.sh/uv/install.sh | sh`, or `pipx install uv`)
+* Python **3.11+** (uv downloads one automatically if none is installed; developed on 3.14)
 * An **OpenAI API key** with access to `gpt-6-luna` (Decisions API + Responses API)
-* ~50 MB disk for the virtual environment
 
 ## 3. Setup
 
-```bash
-python3 -m venv .venv
-```
+Dependencies are declared in `pyproject.toml` and pinned in `uv.lock`. One command creates `.venv/` at the
+repository root and installs the exact locked versions:
 
 ```bash
-.venv/bin/pip install -r code/requirements.txt
+uv sync
 ```
 
-(Windows: `.venv\Scripts\pip install -r code\requirements.txt`; with `uv`: `uv venv .venv && uv pip install --python .venv/bin/python -r code/requirements.txt`.)
+Every command below uses `uv run`, which runs inside that environment (and re-syncs it if the lock file
+changed), so there is no need to activate the virtual environment. Add or upgrade a dependency with
+`uv add <package>` / `uv lock --upgrade-package <package>`.
 
 Create the `.env` file at the repository root (it is git-ignored — never commit it):
 
@@ -63,7 +65,7 @@ The key is read only from the environment / `.env`; it is never written to logs,
 ### Full dataset → `output.csv`
 
 ```bash
-.venv/bin/python code/main.py
+uv run code/main.py
 ```
 
 Writes `output.csv` (518 rows, sorted by `case_id`) at the repository root, prints one progress line per case
@@ -72,24 +74,24 @@ and the usage summary, and saves the usage JSON to `code/evaluation/usage_run.js
 ### A user-specified number of examples (testing / debugging)
 
 ```bash
-.venv/bin/python code/main.py --limit 5
+uv run code/main.py --limit 5
 ```
 
 ```bash
-.venv/bin/python code/main.py --cases case_33,case_40,case_533
+uv run code/main.py --cases case_33,case_40,case_533
 ```
 
 Subset runs write `output_subset.csv` (never overwriting `output.csv`) and `code/evaluation/usage_run_subset.json`.
 Combine with `--requests` to run on another file, e.g. the labelled samples:
 
 ```bash
-.venv/bin/python code/main.py --requests dataset/sample_deletion_requests.csv --limit 10 --output sample_pred.csv
+uv run code/main.py --requests dataset/sample_deletion_requests.csv --limit 10 --output sample_pred.csv
 ```
 
 ### Explain one case
 
 ```bash
-.venv/bin/python code/main.py --requests dataset/sample_deletion_requests.csv --explain case_11
+uv run code/main.py --requests dataset/sample_deletion_requests.csv --explain case_11
 ```
 
 Prints the resolved user, the intent decision, every linked record with all its observations (file, time,
@@ -98,7 +100,7 @@ exists / exposed / flow / restore flags), the verdict per record and the final s
 ### Offline / reproducible re-runs
 
 ```bash
-.venv/bin/python code/main.py --offline
+uv run code/main.py --offline
 ```
 
 `--offline` never calls the API: it uses the cached intent answers (`code/cache/intent.json`) and cached
@@ -109,7 +111,7 @@ run and costs nothing. Without caches it falls back to a rule-based intent check
 ### Fresh (cold-cache) run for the usage report
 
 ```bash
-.venv/bin/python code/main.py --fresh
+uv run code/main.py --fresh
 ```
 
 `--fresh` ignores the caches and calls the models again, so `usage_run.json` reflects the true cost of a full run.
@@ -128,13 +130,13 @@ prints and saves:
 Turn the saved JSON of the final full run into the submission report:
 
 ```bash
-.venv/bin/python code/evaluation/usage_report.py
+uv run code/evaluation/usage_report.py
 ```
 
 ## 6. Evaluate
 
 ```bash
-.venv/bin/python code/evaluation/main.py
+uv run code/evaluation/main.py
 ```
 
 Runs the agent on the 32 labelled samples (`dataset/sample_deletion_requests.csv`) and on the custom cases in
@@ -152,7 +154,7 @@ Useful flags: `--verbose` (missing / extra steps per case), `--offline` (no API 
 ## 7. Package the submission
 
 ```bash
-zip -r code.zip README.md README_2.md code -x "*/__pycache__/*" "*/.venv/*" "*/node_modules/*" "*/.git/*" "*/.DS_Store" "*.usage.json"
+zip -r code.zip README.md README_2.md pyproject.toml uv.lock code -x "*/__pycache__/*" "*/.venv/*" "*/node_modules/*" "*/.git/*" "*/.DS_Store" "*.usage.json"
 ```
 
 Submit `code.zip`, `output.csv`, and the chat transcript `log.txt` at
