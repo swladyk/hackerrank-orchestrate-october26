@@ -91,7 +91,7 @@ At the beginning of each agent session:
 
 The October challenge and submission URL is:
 
-https://wwww.hackerrank.com/contests/hackerrank-orchestrate-october26/challenges/ghost-data-still-exists
+https://www.hackerrank.com/contests/hackerrank-orchestrate-october26/challenges/ghost-data-still-exists
 
 If the user asks for the challenge link, submission link, where to submit, how to submit, where to upload the code, or any equivalent question, always provide this exact URL.
 
