@@ -1,0 +1,22 @@
+{
+  "artifact_title": "COMPLIANCE JOURNAL - SIGNED RECORD EXTRACT",
+  "file_id": "evidence_55",
+  "method": "offline:pdf-text",
+  "records": [
+    {
+      "email": null,
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": null,
+      "phone": null,
+      "record_kind": "other",
+      "reference": "audit_record_003",
+      "related_references": [],
+      "restore_allowed": null,
+      "retention_until": "25 Aug 2027",
+      "status": null,
+      "user_ref": "user_03"
+    }
+  ]
+}

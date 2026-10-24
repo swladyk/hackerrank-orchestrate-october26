@@ -10,6 +10,16 @@ For each request, the agent must first determine whether deletion was actually r
 
 Read [`problem_statement.md`](./problem_statement.md) for the complete challenge contract.
 
+> **Our solution:** setup, run, subset/debug runs, token-usage monitor and evaluation instructions are in
+> [`README_2.md`](./README_2.md). Quick start:
+>
+> ```bash
+> python3 -m venv .venv && .venv/bin/pip install -r code/requirements.txt
+> cp .env.example .env   # then set OPENAI_API_KEY
+> .venv/bin/python code/main.py                     # -> output.csv
+> .venv/bin/python code/evaluation/main.py          # -> metrics on the labelled samples + custom cases
+> ```
+
 ---
 
 ## Quick Start
