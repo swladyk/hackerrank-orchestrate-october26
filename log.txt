@@ -532,3 +532,138 @@ branch=main
 repo_root=/home/stanislaw/hackerrank-orchestrate-october26
 worktree=main
 parent_agent=none
+
+## [2026-10-24T19:05:00+02:00] Trace case_04 and propose fixes
+
+User Prompt (verbatim, secrets redacted):
+yes, start with case_04 and propose fixes
+
+Agent Response Summary:
+Traced case_04 offline through Auditor with a scratchpad script. user_04 has no evidence links (the account was deleted, the analytics row anonymized), and WorkflowLinker found no job anchor because no deletion_worker DELETE_RECORD exists for account_004; the only worker event for the job is ANONYMIZE analytics_901 (activity_3463, 7 min before reported_at). Also found absence_proof picks the newest listing (evidence_90) while the correct answer cites evidence_54. Proposed three fixes (non-account anchor, account fallback, proof selection) with risks; no code changed yet.
+
+Actions:
+* scratchpad scripts trace.py and cov.py run with uv (offline, no API calls)
+* grep over dataset/system_activity.csv, evidence_files.csv, evidence/ SQL snapshots
+* read code/agent/audit.py, planner.py, workflow.py, evidence/index.py
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none
+
+## [2026-10-24T16:23:54Z] SESSION START
+
+tool=Cursor
+model=Grok 4.7
+Repo Root: /home/stanislaw/hackerrank-orchestrate-october26
+Branch: main
+Worktree: main
+Parent Agent: none
+Language: py
+Time Remaining: not configured
+
+## [2026-10-24T16:25:00Z] Instrument case_04 resource drop
+
+User Prompt (verbatim, secrets redacted):
+Debug one deterministic mismatch in this deletion-audit agent. Do not rewrite the pipeline.
+
+Repo root: /home/stanislaw/hackerrank-orchestrate-october26
+Entry point: code/main.py
+Scorer: code/evaluation/main.py
+Contract: AGENTS.md §6 and problem_statement.md
+Predictions must use only files under dataset/. Never read organizer-only truth, generator internals, or golden files to hardcode a case_id, resource_id, or evidence_id. dataset/sample_output.csv is a scorer label only.
+
+Bug: case_04 on the public sample.
+Expected (from dataset/sample_output.csv): deletion_status COMPLETE and exactly these steps, in order:
+1. VERIFICATION VERIFY_RECORD_ABSENT account_service/account_004 evidence_54 ABSENT
+2. VERIFICATION VERIFY_RECORD_ANONYMIZED analytics_platform/analytics_901 evidence_56 ANONYMIZED
+Actual (code/evaluation/sample_predictions.csv): COMPLETE with steps_json [].
+
+Reproduce only this command, from the repo root, and do not write output.csv:
+
+uv run code/main.py --offline --requests dataset/sample_deletion_requests.csv --explain case_04
+
+Also score just that case if useful:
+
+uv run code/evaluation/main.py --offline --verbose --no-custom
+
+Hypotheses to instrument, not to assume:
+- identity resolution never links account_004 or analytics_901
+- the records are seen but dropped by the requested_at..audit_at window, the job-anchor rule, or the COMPLETE-vs-finding filter
+- evidence_54 / evidence_56 are parsed but not cited because capture time or file type is rejected
+
+Add temporary logs around the decision that drops those two resources. Print case_id, candidate resource ids, why each candidate was kept or dropped, and the evidence_id considered. After I run the command, use the runtime output to make the smallest generic fix. Re-run the same command and confirm case_04 matches sample_output.csv exactly, and that case_11, case_13, and case_30 still match. Then remove every log you added.
+
+Do not special-case case_04. Do not change ordering, output columns, or the full 518-case path.
+
+Agent Response Summary:
+Added temporary debug logs only. They record, for case_04, whether account_004 and analytics_901 are identity-linked, dropped by the request time window, dropped by job anchoring, dropped inside assess, or left uncited because the evidence file is not citable. No decision logic was changed. Waiting for the offline explain run before choosing a fix.
+
+Actions:
+* instrumented code/agent/audit.py and code/agent/workflow.py
+* py_compile of those two modules
+
+Context:
+tool=Cursor
+model=Grok 4.7
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none
+
+## [2026-10-24T16:32:00Z] Fix case_04 empty verification steps
+
+User Prompt (verbatim, secrets redacted):
+Issue reproduced, please proceed.
+
+Agent Response Summary:
+Runtime logs showed case_04 had no identity link and an empty account-delete anchor window, so analytics_901 was assigned to another job and both resources were dropped before assessment. evidence_56 was already citable. The fix anchors a job with no account submission on the unowned policy action in that same window, uses the stable account id when the worker never names a profile, and ignores empty SQL dumps as population listings. case_04 now matches the labelled COMPLETE steps, and case_11, case_13, and case_30 still match. Temporary logs were removed.
+
+Actions:
+* edited code/agent/workflow.py, code/agent/audit.py, code/agent/evidence/index.py
+* uv run code/main.py --offline --requests dataset/sample_deletion_requests.csv --explain case_04
+* compared case_04, case_11, case_13, and case_30 to dataset/sample_output.csv
+
+Context:
+tool=Cursor
+model=Grok 4.7
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none
+
+## [2026-10-24T16:45:51Z] Open draft PR for case_04 fix
+
+User Prompt (verbatim, secrets redacted):
+Create or update a pull request for this branch.
+- You are on the default branch. Create a new branch first. Do not commit, push, or open a pull request directly from the default branch.
+- Commit and push any intended changes before creating the pull request.
+- Use the gh CLI (e.g. gh pr create or gh pr create --draft) to create the PR after pushing, or gh pr edit to update the existing PR if one already exists for this branch.
+- Do not stop after committing or pushing; finish by creating or updating the pull request.
+- If the CLI needed to create the pull request is not installed or not signed in, stop after pushing and give the user a compare link instead.
+- Write a concise pull request title.
+- Provide a complete pull request description/body.
+- Create the pull request as a draft unless there is a clear reason to mark it ready immediately.
+- Before creating the pull request, check for a PR template (for example PULL_REQUEST_TEMPLATE.md, .github/PULL_REQUEST_TEMPLATE.md, or PULL_REQUEST_TEMPLATE/*.md) and use it if one exists.
+
+Repository: github.com/swladyk/hackerrank-orchestrate-october26
+Base branch: main
+Head branch: main
+
+Agent Response Summary:
+Local main was already two commits ahead of origin/main and the worktree was clean, so no change was committed or pushed from the default branch. Created fix/case-04-deletion-verification from that work, recorded this turn in log.txt, and will push the new branch and open a draft pull request against main. No pull request template is present in the repo.
+
+Actions:
+* git checkout -b fix/case-04-deletion-verification
+* append log.txt
+
+Context:
+tool=Cursor
+model=Grok 4.7
+branch=fix/case-04-deletion-verification
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none

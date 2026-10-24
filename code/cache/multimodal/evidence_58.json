@@ -1,5 +1,5 @@
 {
-  "artifact_title": "DELIVERY ADDRESS CORRECTION REQUEST",
+  "artifact_title": "Delivery Address Correction Request",
   "file_id": "evidence_58",
   "method": "llm:gpt-6-luna",
   "records": [
@@ -32,8 +32,7 @@
       "reference": "delivery_address_correction.pdf",
       "related_references": [
         "CS-4827",
-        "ORD-20264827",
-        "support_001"
+        "ORD-20264827"
       ],
       "restore_allowed": null,
       "retention_until": null,

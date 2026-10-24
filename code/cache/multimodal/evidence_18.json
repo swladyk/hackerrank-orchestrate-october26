@@ -10,14 +10,33 @@
       "name": "Ingrid Dahl",
       "observed_at": null,
       "phone": null,
-      "record_kind": "other",
-      "reference": "NST-2026-0718-1842",
+      "record_kind": "account_profile",
+      "reference": "user_18",
       "related_references": [
+        "NST-2026-0718-1842",
         "ORD-20261260"
       ],
       "restore_allowed": null,
       "retention_until": null,
-      "status": "Paid",
+      "status": null,
+      "user_ref": "user_18"
+    },
+    {
+      "email": "ingrid.dahl@outlook.com",
+      "email_hash": null,
+      "enabled": null,
+      "name": "Ingrid Dahl",
+      "observed_at": null,
+      "phone": null,
+      "record_kind": "other",
+      "reference": "ORD-20261260",
+      "related_references": [
+        "NST-2026-0718-1842",
+        "user_18"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": "paid",
       "user_ref": "user_18"
     }
   ]

@@ -64,8 +64,15 @@ class EvidenceIndex:
 
     def absence_proof(self, resource_id: str, system_id: str, audit_at: str) -> Observation | None:
         """Newest citable complete listing of the system that does not contain the resource."""
-        proofs = [o for o in self.coverage.get(system_id, ()) if citable(o, audit_at)
-                  and resource_id not in o.attrs["_coverage"]]
+        proofs = []
+        for o in self.coverage.get(system_id, ()):
+            if not citable(o, audit_at) or resource_id in o.attrs["_coverage"]:
+                continue
+            # A SQL dump that names the system and inserts nothing is not an enumerated population.
+            # An explicit empty JSON collection still is.
+            if not o.attrs["_coverage"] and self.files[o.file_id].path.suffix.lower() == ".sql":
+                continue
+            proofs.append(o)
         return max(proofs, key=lambda o: (o.observed_at, o.file_captured_at, o.file_id), default=None)
 
     def system_of(self, resource_id: str) -> str:
