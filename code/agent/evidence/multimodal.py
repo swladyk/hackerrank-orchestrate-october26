@@ -45,6 +45,24 @@ def status_result(status: str | None, kind: str) -> str | None:
     return None
 
 
+def resolve_resource(refs: list[str], aliases: dict[str, str]) -> str | None:
+    return next((r for r in refs if is_resource(r)), None) or next((aliases[r] for r in refs if r in aliases), None)
+
+
+def shared_reference_resources(records: list[dict], aliases: dict[str, str]) -> dict[str, str]:
+    """Non-resource references (ticket, order numbers) that point at exactly one resource in this artifact."""
+    seen: dict[str, set[str]] = {}
+    for rec in records:
+        refs = [rec.get("reference") or ""] + list(rec.get("related_references") or [])
+        resource_id = resolve_resource(refs, aliases)
+        if not resource_id:
+            continue
+        for r in refs:
+            if r and not is_resource(r) and r not in aliases:
+                seen.setdefault(r, set()).add(resource_id)
+    return {r: next(iter(ids)) for r, ids in seen.items() if len(ids) == 1}
+
+
 def load_cached(file_id: str) -> dict | None:
     path = MULTIMODAL_CACHE / f"{file_id}.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
@@ -67,13 +85,19 @@ def load_multimodal(files: dict[str, EvidenceFile], aliases: dict[str, str], llm
                 or extraction
         if not extraction:
             continue
-        for rec in extraction.get("records", []):
+        records = extraction.get("records", [])
+        shared = shared_reference_resources(records, aliases)
+        for rec in records:
             refs = [rec.get("reference") or ""] + list(rec.get("related_references") or [])
-            resource_id = next((r for r in refs if is_resource(r)), None) or \
-                next((aliases[r] for r in refs if r in aliases), None)
+            kind = rec.get("record_kind") or "other"
+            resource_id = resolve_resource(refs, aliases)
+            if not resource_id and kind in KIND_CATEGORY:
+                # e.g. an attachment named only by its file name, filed under the same ticket/order
+                # as a support_* record in this artifact: it is that resource's attachment.
+                candidates = {shared[r] for r in refs if r in shared}
+                resource_id = candidates.pop() if len(candidates) == 1 else None
             if not resource_id:
                 continue
-            kind = rec.get("record_kind") or "other"
             raw = {k: rec.get(k) for k in ("name", "email", "phone", "email_hash", "user_ref", "enabled",
                                            "restore_allowed", "retention_until")}
             raw = {k: v for k, v in raw.items() if v is not None or k in ("name", "email", "phone", "email_hash")}

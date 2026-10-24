@@ -667,3 +667,56 @@ branch=fix/case-04-deletion-verification
 repo_root=/home/stanislaw/hackerrank-orchestrate-october26
 worktree=main
 parent_agent=none
+
+## [2026-10-24T19:05:00+02:00] SESSION START
+
+tool=Claude Code
+model=claude-opus-5-5
+Repo Root: /home/stanislaw/hackerrank-orchestrate-october26
+Branch: main
+Worktree: main
+Parent Agent: none
+Language: py
+Time Remaining: not configured
+
+## [2026-10-24T19:10:00+02:00] Re-run the 32 sample evaluations after Grok fixes
+
+User Prompt (verbatim, secrets redacted):
+Grok implemented new fixes. Check the 32 evaluations now
+
+Agent Response Summary:
+Checked the new commits (no hardcoded case IDs or gold values in code/agent) and re-ran `uv run code/evaluation/main.py --verbose` (all LLM answers served from cache, 0 API calls). case_04 is now fixed, case_18/20/23 are unchanged, and case_07 regressed: support_001 is now redacted instead of deleted. Root cause traced to the regenerated vision cache code/cache/multimodal/evidence_58.json (commit e71f378), where the LLM no longer links support_001 to the support attachment, so rule_05 (REDACT) applies instead of rule_06 (DELETE). No code changed.
+
+Actions:
+* git log / git show on recent commits; grep of code/agent diff for hardcoded labels
+* uv run code/evaluation/main.py --verbose (rewrote code/evaluation/sample_predictions.csv and custom_cases/predictions.csv)
+* inspected code/cache/multimodal/evidence_58.json and its git history
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none
+
+## [2026-10-24T19:30:00+02:00] Make support-attachment linking robust to vision extraction (case_07)
+
+User Prompt (verbatim, secrets redacted):
+go with option 2
+
+Agent Response Summary:
+In code/agent/evidence/multimodal.py, a typed record with no resource id (e.g. an attachment named only by file name) is now linked to the single resource in the same artifact that shares its ticket/order reference; ambiguous references and "other" records are ignored. case_07 is fixed with both the current and the previous evidence_58 vision cache: sample sequence accuracy 28/32 -> 29/32, step F1 97.4% -> 99.0%; custom cases stay at 100%. The full 518-case run (offline, cached intents) produced an identical output.csv and validate_output.py reports 0 errors; usage_run.json was left untouched.
+
+Actions:
+* edited code/agent/evidence/multimodal.py (resolve_resource, shared_reference_resources)
+* uv run code/evaluation/main.py --offline --verbose (also with the 6a206e2 evidence_58 cache, then restored)
+* uv run code/main.py --offline --usage-out <scratchpad>; uv run code/evaluation/validate_output.py; diffed output.csv
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none

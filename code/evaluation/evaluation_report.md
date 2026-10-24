@@ -21,45 +21,45 @@
 ## Results
 
 <!-- metrics:start -->
-#### Public sample cases (32 cases, 193 gold steps, 189 predicted steps)
+#### Public sample cases (32 cases, 193 gold steps, 191 predicted steps)
 
 | Metric | Value |
 |---|---|
 | Case-level deletion_status accuracy | 100.0% |
-| Step-level precision / recall / F1 (all 6 fields) | 99.5% / 97.4% / 98.4% |
-| Step-level P / R / F1 ignoring evidence_id | 99.5% / 97.4% / 98.4% |
-| Field-level accuracy (positional, mean of 7 fields) | 96.7% |
-| Sequence accuracy (steps_json exactly equal) | 87.5% |
+| Step-level precision / recall / F1 (all 6 fields) | 99.5% / 98.4% / 99.0% |
+| Step-level P / R / F1 ignoring evidence_id | 99.5% / 98.4% / 99.0% |
+| Field-level accuracy (positional, mean of 7 fields) | 97.7% |
+| Sequence accuracy (steps_json exactly equal) | 90.6% |
 
 | Field | Accuracy |
 |---|---|
-| step_no | 97.9% |
-| phase | 97.9% |
-| system_id | 95.9% |
-| resource_id | 95.3% |
-| operation | 95.9% |
-| state | 95.9% |
-| evidence_id | 97.9% |
+| step_no | 99.0% |
+| phase | 99.0% |
+| system_id | 96.9% |
+| resource_id | 96.4% |
+| operation | 96.9% |
+| state | 96.9% |
+| evidence_id | 99.0% |
 
-#### Custom evaluation cases (4 cases, 23 gold steps, 26 predicted steps)
+#### Custom evaluation cases (4 cases, 23 gold steps, 23 predicted steps)
 
 | Metric | Value |
 |---|---|
-| Case-level deletion_status accuracy | 75.0% |
-| Step-level precision / recall / F1 (all 6 fields) | 88.5% / 100.0% / 93.9% |
-| Step-level P / R / F1 ignoring evidence_id | 88.5% / 100.0% / 93.9% |
-| Field-level accuracy (positional, mean of 7 fields) | 88.5% |
-| Sequence accuracy (steps_json exactly equal) | 75.0% |
+| Case-level deletion_status accuracy | 100.0% |
+| Step-level precision / recall / F1 (all 6 fields) | 100.0% / 100.0% / 100.0% |
+| Step-level P / R / F1 ignoring evidence_id | 100.0% / 100.0% / 100.0% |
+| Field-level accuracy (positional, mean of 7 fields) | 100.0% |
+| Sequence accuracy (steps_json exactly equal) | 100.0% |
 
 | Field | Accuracy |
 |---|---|
-| step_no | 88.5% |
-| phase | 88.5% |
-| system_id | 88.5% |
-| resource_id | 88.5% |
-| operation | 88.5% |
-| state | 88.5% |
-| evidence_id | 88.5% |
+| step_no | 100.0% |
+| phase | 100.0% |
+| system_id | 100.0% |
+| resource_id | 100.0% |
+| operation | 100.0% |
+| state | 100.0% |
+| evidence_id | 100.0% |
 <!-- metrics:end -->
 
 ### Structural checks on the full 518-case run
