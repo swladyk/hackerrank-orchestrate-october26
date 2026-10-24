@@ -720,3 +720,44 @@ branch=main
 repo_root=/home/stanislaw/hackerrank-orchestrate-october26
 worktree=main
 parent_agent=none
+
+## [2026-10-24T19:55:00+02:00] Investigate case_18 and case_20 missing audit-record verification
+
+User Prompt (verbatim, secrets redacted):
+now fix case_18 and case_20
+
+Agent Response Summary:
+Traced both cases with --explain and searched all participant data (CSV files, logs, SQL, JSON records, vision caches, and the two relevant screenshots viewed directly). Every other audit_record ID in the sample answers appears in participant evidence, but audit_record_6645 (case_18, user_50) and audit_record_5569 (case_20, user_48) appear nowhere, and no security audit event links to either user. These steps cannot be derived without copying gold labels, which AGENTS.md forbids, so no agent logic was changed for them. Fixed a side bug: --explain was overwriting code/evaluation/usage_run.json; restored that file from git and made --explain write the subset usage file instead.
+
+Actions:
+* uv run code/main.py --offline --requests dataset/sample_deletion_requests.csv --explain case_18 / case_23
+* grep over dataset/ and code/cache/multimodal; viewed evidence_04 and evidence_37 PNGs
+* git checkout -- code/evaluation/usage_run.json
+* edited code/main.py (--explain counts as a subset run)
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none
+
+## [2026-10-24T20:05:00+02:00] Simple explanation of why case_18 and case_20 cannot be fixed
+
+User Prompt (verbatim, secrets redacted):
+Can you explain me in simpler terms why these 2 cases are not possible to fix?
+
+Agent Response Summary:
+Explained in plain language with an analogy: the correct answers for case_18 and case_20 name audit record IDs that never appear in any file the agent may read, so the agent cannot discover them; the only way to output them is to copy from sample_output.csv, which the rules forbid and which would not help on the 518 hidden cases. No files changed besides this log.
+
+Actions:
+* none (explanation only)
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none

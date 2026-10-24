@@ -40,7 +40,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 def main(argv: list[str]) -> int:
     args = parse_args(argv)
     requests = load_requests(resolve(args.requests))
-    subset = args.limit is not None or args.cases
+    subset = args.limit is not None or args.cases or args.explain
     if args.cases:
         wanted = {c.strip() for c in args.cases.split(",") if c.strip()}
         requests = [r for r in requests if r.case_id in wanted]
