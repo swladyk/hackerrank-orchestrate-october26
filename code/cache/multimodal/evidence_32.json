@@ -1,0 +1,69 @@
+{
+  "artifact_title": "Customer-platform archives",
+  "file_id": "evidence_32",
+  "method": "llm:gpt-6-luna",
+  "records": [
+    {
+      "email": "bluepeakco@outlook.com",
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": null,
+      "phone": null,
+      "record_kind": "backup_archive",
+      "reference": "backup_9291",
+      "related_references": [],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": null,
+      "user_ref": null
+    },
+    {
+      "email": "miller.logistics@company.com",
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": null,
+      "phone": null,
+      "record_kind": "backup_archive",
+      "reference": "backup_9288",
+      "related_references": [],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": null,
+      "user_ref": null
+    },
+    {
+      "email": "areed1433@gmail.com",
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": null,
+      "phone": null,
+      "record_kind": "backup_archive",
+      "reference": "backup_9287",
+      "related_references": [
+        "s3://northstar-backups/customer-platform/weekly/segment-42-20260426.tar.zst"
+      ],
+      "restore_allowed": null,
+      "retention_until": "2026-07-26",
+      "status": null,
+      "user_ref": null
+    },
+    {
+      "email": "summit-retail@company.com",
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": null,
+      "phone": null,
+      "record_kind": "backup_archive",
+      "reference": "backup_9286",
+      "related_references": [],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": null,
+      "user_ref": null
+    }
+  ]
+}

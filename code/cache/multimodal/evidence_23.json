@@ -1,0 +1,75 @@
+{
+  "artifact_title": "Data exports",
+  "file_id": "evidence_23",
+  "method": "llm:gpt-6-luna",
+  "records": [
+    {
+      "email": "marcus.lee@northstar.shop",
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": "2026-06-20T14:18:00Z",
+      "phone": null,
+      "record_kind": "customer_export",
+      "reference": "export_1261",
+      "related_references": [
+        "customer_export_1261.zip"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": "Collecting",
+      "user_ref": null
+    },
+    {
+      "email": "ingrid.dahl@outlook.com",
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": "2026-06-18T06:42:00Z",
+      "phone": null,
+      "record_kind": "customer_export",
+      "reference": "export_1260",
+      "related_references": [
+        "customer_export_1260.zip"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": "Ready",
+      "user_ref": null
+    },
+    {
+      "email": "sara.kim@northstar.shop",
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": "2026-06-17T11:03:00Z",
+      "phone": null,
+      "record_kind": "customer_export",
+      "reference": "export_1259",
+      "related_references": [
+        "customer_export_1259.zip"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": "Packaging",
+      "user_ref": null
+    },
+    {
+      "email": "daniel.park@northstar.shop",
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": "2026-06-16T09:27:00Z",
+      "phone": null,
+      "record_kind": "customer_export",
+      "reference": "export_1258",
+      "related_references": [
+        "customer_export_1258.zip"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": "Ready",
+      "user_ref": null
+    }
+  ]
+}

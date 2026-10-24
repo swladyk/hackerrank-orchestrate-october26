@@ -1,0 +1,67 @@
+{
+  "artifact_title": "Connections",
+  "file_id": "evidence_14",
+  "method": "llm:gpt-6-luna",
+  "records": [
+    {
+      "email": "jain.aditi@gmail.com",
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": "2026-08-07T08:00:00Z",
+      "phone": null,
+      "record_kind": "connector_data_flow",
+      "reference": "data_flow_1121",
+      "related_references": [],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": "Healthy",
+      "user_ref": null
+    },
+    {
+      "email": "lucia-torres@gmail.com",
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": "2026-08-07T08:00:00Z",
+      "phone": null,
+      "record_kind": "connector_data_flow",
+      "reference": "data_flow_9846",
+      "related_references": [],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": null,
+      "user_ref": null
+    },
+    {
+      "email": null,
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": "2026-08-07T08:00:00Z",
+      "phone": null,
+      "record_kind": "connector_data_flow",
+      "reference": "Order notifications",
+      "related_references": [],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": null,
+      "user_ref": null
+    },
+    {
+      "email": null,
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": "2026-08-07T08:00:00Z",
+      "phone": null,
+      "record_kind": "connector_data_flow",
+      "reference": "Delivery tracking",
+      "related_references": [],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": null,
+      "user_ref": null
+    }
+  ]
+}

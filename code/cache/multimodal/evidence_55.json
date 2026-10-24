@@ -1,20 +1,22 @@
 {
   "artifact_title": "COMPLIANCE JOURNAL - SIGNED RECORD EXTRACT",
   "file_id": "evidence_55",
-  "method": "offline:pdf-text",
+  "method": "llm:gpt-6-luna",
   "records": [
     {
       "email": null,
       "email_hash": null,
       "enabled": null,
       "name": null,
-      "observed_at": null,
+      "observed_at": "2026-08-25T04:03:00Z",
       "phone": null,
-      "record_kind": "other",
+      "record_kind": "security_audit_record",
       "reference": "audit_record_003",
-      "related_references": [],
+      "related_references": [
+        "user_03"
+      ],
       "restore_allowed": null,
-      "retention_until": "25 Aug 2027",
+      "retention_until": "2027-08-25",
       "status": null,
       "user_ref": "user_03"
     }

@@ -439,3 +439,96 @@ branch=main
 repo_root=/home/stanislaw/hackerrank-orchestrate-october26
 worktree=main
 parent_agent=none
+
+## [2026-10-24T18:00:00+02:00] How to check evaluation results
+
+User Prompt (verbatim, secrets redacted):
+After I run uv run code/evaluation/main.py. How can I check the results?
+
+Agent Response Summary:
+Read code/evaluation/main.py to explain where results go: metrics print to the terminal, predictions are saved to code/evaluation/sample_predictions.csv (plus a .usage.json), --verbose shows per-case diffs, and --write-report writes the metrics block into code/evaluation/evaluation_report.md. No files changed besides this log.
+
+Actions:
+* read code/evaluation/main.py, validate_output.py, usage_report.py
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none
+
+## [2026-10-24T18:15:00+02:00] Interpret evaluation results and missing OpenAI usage
+
+User Prompt (verbatim, secrets redacted):
+[pasted output of `uv run code/evaluation/main.py`: sample cases 100% status accuracy, step F1 98.4%, sequence accuracy 87.5%; custom cases 100%; 47 gpt-6-luna calls, 53,833 tokens, $0.009223]
+What does this results tell us? Why I dont see any usage on the OpenAI API platform?
+
+Agent Response Summary:
+Explained the metrics and re-scored the saved predictions with --pred --verbose (no API calls) to find the 4 imperfect sample cases: case_04 (2 missing COMPLETE verification steps), case_18 and case_20 (missing VERIFY_RECORD_PRESENT for retained security audit records), case_23 (wrong account resource_id in verification). Confirmed from code/agent/llm/client.py that token counts come from real OpenAI response.usage, so calls did reach OpenAI; the dashboard gap is likely lag, a different project/org selected, or the tiny cost (~$0.01) rounding. No code changed.
+
+Actions:
+* read code/agent/config.py, code/agent/llm/client.py, intent.py, usage.py, code/evaluation/custom.py
+* uv run code/evaluation/main.py --pred code/evaluation/sample_predictions.csv --no-custom --verbose
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none
+
+## [2026-10-24T18:35:00+02:00] Detailed explanation of evaluation results
+
+User Prompt (verbatim, secrets redacted):
+Ok, can you explain me the results with more details?
+
+Agent Response Summary:
+Read the scorer in code/evaluation/main.py to explain exactly how each metric is computed (multiset step matching, positional field accuracy, exact sequence match). Compared predicted vs correct steps for the 4 imperfect sample cases (case_04, case_18, case_20, case_23) and gave likely root causes, flagged as hypotheses: missing COMPLETE verification in case_04, missing retained security audit record verification in case_18/case_20, wrong account resolution in case_23 (both candidate accounts appear only in a post-audit_at bundle). No code changed.
+
+Actions:
+* read code/evaluation/main.py scoring functions
+* python3 script comparing dataset/sample_output.csv with code/evaluation/sample_predictions.csv for 4 cases
+* grep over dataset/evidence_files.csv, user_identities.csv, system_activity.csv, evidence/ and code/cache
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none
+
+## [2026-10-24T16:03:10Z] SESSION START
+
+tool=Cursor
+model=Grok 4.7
+Repo Root: /home/stanislaw/hackerrank-orchestrate-october26
+Branch: main
+Worktree: main
+Parent Agent: none
+Language: py
+Time Remaining: not configured
+
+## [2026-10-24T16:03:10Z] Review Claude Code deletion-audit solution
+
+User Prompt (verbatim, secrets redacted):
+Read the repo and tell me if everythong is done correct. Don't code anything just review the solution proposed by ClaudeCode.
+
+Agent Response Summary:
+Reviewed the deletion-audit agent without changing code. The design matches the contract and the 32 public samples score 100% status accuracy and 98.4% step F1, with 4 inexact sequences. The 518-row output.csv is the earlier offline run: usage_report.md is missing, usage_run.json records zero model calls, and nine real users are marked COMPLETE with an empty step list. Workflow attribution still uses the keyword heuristic, and the written evaluation report is behind the current custom-case predictions.
+
+Actions:
+* read AGENTS.md contract, README.md, README_2.md, problem_statement.md, code/main.py, audit.py, planner.py, policy.py, workflow.py, intent.py, evaluation_report.md, usage_report.py, usage_run.json, validate_output.py
+* compared sample_predictions.csv and custom predictions to labelled answers
+* checked output.csv row count, sort, status mix, empty COMPLETE cases, and evidence citations
+
+Context:
+tool=Cursor
+model=Grok 4.7
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none

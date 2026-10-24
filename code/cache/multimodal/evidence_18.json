@@ -1,13 +1,13 @@
 {
   "artifact_title": "NORTHSTAR SHOP - CUSTOMER STATEMENT",
   "file_id": "evidence_18",
-  "method": "offline:pdf-text",
+  "method": "llm:gpt-6-luna",
   "records": [
     {
       "email": "ingrid.dahl@outlook.com",
       "email_hash": null,
       "enabled": null,
-      "name": null,
+      "name": "Ingrid Dahl",
       "observed_at": null,
       "phone": null,
       "record_kind": "other",
@@ -17,24 +17,7 @@
       ],
       "restore_allowed": null,
       "retention_until": null,
-      "status": null,
-      "user_ref": "user_18"
-    },
-    {
-      "email": "ingrid.dahl@outlook.com",
-      "email_hash": null,
-      "enabled": null,
-      "name": null,
-      "observed_at": null,
-      "phone": null,
-      "record_kind": "other",
-      "reference": "ORD-20261260",
-      "related_references": [
-        "NST-2026-0718-1842"
-      ],
-      "restore_allowed": null,
-      "retention_until": null,
-      "status": null,
+      "status": "Paid",
       "user_ref": "user_18"
     }
   ]

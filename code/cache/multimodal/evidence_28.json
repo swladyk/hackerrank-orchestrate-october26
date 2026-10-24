@@ -1,0 +1,44 @@
+{
+  "artifact_title": "CS-5034 · Where is my delivery?",
+  "file_id": "evidence_28",
+  "method": "llm:gpt-6-luna",
+  "records": [
+    {
+      "email": "kagyeman8947@fastmail.com",
+      "email_hash": null,
+      "enabled": null,
+      "name": "Kofi Agyeman",
+      "observed_at": null,
+      "phone": null,
+      "record_kind": "support_message",
+      "reference": "support_1034",
+      "related_references": [
+        "CS-5034",
+        "ORD-20265034",
+        "SWF-884103"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": null,
+      "user_ref": null
+    },
+    {
+      "email": null,
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": null,
+      "phone": null,
+      "record_kind": "other",
+      "reference": "ORD-20265034",
+      "related_references": [
+        "CS-5034",
+        "SWF-884103"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": "In transit",
+      "user_ref": null
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "artifact_title": "Customer Search",
+  "file_id": "evidence_09",
+  "method": "llm:gpt-6-luna",
+  "records": [
+    {
+      "email": "g.silva76@gmail.com",
+      "email_hash": null,
+      "enabled": null,
+      "name": "Gabriel Silva",
+      "observed_at": "2026-09-01T05:58:21Z",
+      "phone": null,
+      "record_kind": "search_document",
+      "reference": "search_428",
+      "related_references": [
+        "user_13"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": null,
+      "user_ref": "user_13"
+    },
+    {
+      "email": "g.silva76.jr@gmail.com",
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": null,
+      "phone": null,
+      "record_kind": "search_document",
+      "reference": "search_1874",
+      "related_references": [],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": null,
+      "user_ref": null
+    }
+  ]
+}

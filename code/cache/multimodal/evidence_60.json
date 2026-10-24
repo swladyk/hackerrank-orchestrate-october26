@@ -1,0 +1,22 @@
+{
+  "artifact_title": "Audience Operations — Soo-jin Park",
+  "file_id": "evidence_60",
+  "method": "llm:gpt-6-luna",
+  "records": [
+    {
+      "email": "sj.park@naver.com",
+      "email_hash": null,
+      "enabled": null,
+      "name": "Soo-jin Park",
+      "observed_at": "2026-09-15T23:40:00Z",
+      "phone": "+82 10-5837-9451",
+      "record_kind": "marketing_profile",
+      "reference": "marketing_001",
+      "related_references": [],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": "Live",
+      "user_ref": null
+    }
+  ]
+}

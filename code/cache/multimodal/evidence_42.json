@@ -1,0 +1,95 @@
+{
+  "artifact_title": "Customer Reference Registry — user_17",
+  "file_id": "evidence_42",
+  "method": "llm:gpt-6-luna",
+  "records": [
+    {
+      "email": null,
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": "2026-03-10T07:18:00Z",
+      "phone": null,
+      "record_kind": "other",
+      "reference": "user_17",
+      "related_references": [
+        "ORD-20263245",
+        "CS-3245",
+        "CS-3378",
+        "FIN-7742"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": "Retained",
+      "user_ref": "user_17"
+    },
+    {
+      "email": null,
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": null,
+      "phone": null,
+      "record_kind": "other",
+      "reference": "ORD-20263245",
+      "related_references": [
+        "user_17"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": "Active",
+      "user_ref": "user_17"
+    },
+    {
+      "email": null,
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": null,
+      "phone": null,
+      "record_kind": "other",
+      "reference": "CS-3245",
+      "related_references": [
+        "user_17"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": "Active",
+      "user_ref": "user_17"
+    },
+    {
+      "email": null,
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": null,
+      "phone": null,
+      "record_kind": "other",
+      "reference": "CS-3378",
+      "related_references": [
+        "user_17"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": "Active",
+      "user_ref": "user_17"
+    },
+    {
+      "email": null,
+      "email_hash": null,
+      "enabled": null,
+      "name": null,
+      "observed_at": null,
+      "phone": null,
+      "record_kind": "other",
+      "reference": "FIN-7742",
+      "related_references": [
+        "user_17"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": "Active",
+      "user_ref": "user_17"
+    }
+  ]
+}

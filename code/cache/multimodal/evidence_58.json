@@ -1,34 +1,16 @@
 {
   "artifact_title": "DELIVERY ADDRESS CORRECTION REQUEST",
   "file_id": "evidence_58",
-  "method": "offline:pdf-text",
+  "method": "llm:gpt-6-luna",
   "records": [
     {
       "email": "priya.raman@gmail.com",
       "email_hash": null,
       "enabled": null,
-      "name": null,
-      "observed_at": null,
+      "name": "Priya Raman",
+      "observed_at": "2026-06-18T10:24:00Z",
       "phone": "+91 98765 73142",
-      "record_kind": "other",
-      "reference": "CS-4827",
-      "related_references": [
-        "support_001",
-        "ORD-20264827"
-      ],
-      "restore_allowed": null,
-      "retention_until": null,
-      "status": null,
-      "user_ref": null
-    },
-    {
-      "email": "priya.raman@gmail.com",
-      "email_hash": null,
-      "enabled": null,
-      "name": null,
-      "observed_at": null,
-      "phone": "+91 98765 73142",
-      "record_kind": "other",
+      "record_kind": "support_message",
       "reference": "support_001",
       "related_references": [
         "CS-4827",
@@ -40,16 +22,17 @@
       "user_ref": null
     },
     {
-      "email": "priya.raman@gmail.com",
+      "email": null,
       "email_hash": null,
       "enabled": null,
       "name": null,
-      "observed_at": null,
-      "phone": "+91 98765 73142",
-      "record_kind": "other",
-      "reference": "ORD-20264827",
+      "observed_at": "2026-09-12T07:30:00Z",
+      "phone": null,
+      "record_kind": "support_attachment",
+      "reference": "delivery_address_correction.pdf",
       "related_references": [
         "CS-4827",
+        "ORD-20264827",
         "support_001"
       ],
       "restore_allowed": null,

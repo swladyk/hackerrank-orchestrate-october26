@@ -1,0 +1,83 @@
+{
+  "artifact_title": "Customer Operations — Haruka Sato",
+  "file_id": "evidence_04",
+  "method": "llm:gpt-6-luna",
+  "records": [
+    {
+      "email": "haruka.s1838@zoho.com",
+      "email_hash": null,
+      "enabled": null,
+      "name": "Haruka Sato",
+      "observed_at": null,
+      "phone": "+81 90 7610 2507",
+      "record_kind": "account_profile",
+      "reference": "account_5762",
+      "related_references": [
+        "user_11",
+        "ORD-20265762",
+        "ORD-20265518",
+        "CS-8538",
+        "support_9538"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": null,
+      "user_ref": "user_11"
+    },
+    {
+      "email": null,
+      "email_hash": null,
+      "enabled": null,
+      "name": "Haruka Sato",
+      "observed_at": null,
+      "phone": null,
+      "record_kind": "other",
+      "reference": "ORD-20265762",
+      "related_references": [
+        "account_5762",
+        "user_11"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": "Delivered · 18 Sep",
+      "user_ref": "user_11"
+    },
+    {
+      "email": null,
+      "email_hash": null,
+      "enabled": null,
+      "name": "Haruka Sato",
+      "observed_at": null,
+      "phone": null,
+      "record_kind": "other",
+      "reference": "ORD-20265518",
+      "related_references": [
+        "account_5762",
+        "user_11"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": "Returned · 03 Sep",
+      "user_ref": "user_11"
+    },
+    {
+      "email": null,
+      "email_hash": null,
+      "enabled": null,
+      "name": "Haruka Sato",
+      "observed_at": null,
+      "phone": null,
+      "record_kind": "support_message",
+      "reference": "support_9538",
+      "related_references": [
+        "CS-8538",
+        "account_5762",
+        "user_11"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": null,
+      "user_ref": "user_11"
+    }
+  ]
+}

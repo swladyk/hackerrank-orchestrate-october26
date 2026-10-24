@@ -1,0 +1,24 @@
+{
+  "artifact_title": "Pulse Analytics — Users",
+  "file_id": "evidence_19",
+  "method": "llm:gpt-6-luna",
+  "records": [
+    {
+      "email": "darwish.omar@icloud.com",
+      "email_hash": null,
+      "enabled": null,
+      "name": "Omar Darwish",
+      "observed_at": null,
+      "phone": null,
+      "record_kind": "analytics_profile",
+      "reference": "analytics_7438",
+      "related_references": [
+        "user_20"
+      ],
+      "restore_allowed": null,
+      "retention_until": null,
+      "status": null,
+      "user_ref": "user_20"
+    }
+  ]
+}
