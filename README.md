@@ -14,10 +14,10 @@ Read [`problem_statement.md`](./problem_statement.md) for the complete challenge
 > [`README_2.md`](./README_2.md). Quick start:
 >
 > ```bash
-> python3 -m venv .venv && .venv/bin/pip install -r code/requirements.txt
-> cp .env.example .env   # then set OPENAI_API_KEY
-> .venv/bin/python code/main.py                     # -> output.csv
-> .venv/bin/python code/evaluation/main.py          # -> metrics on the labelled samples + custom cases
+> uv sync                                 # creates .venv from pyproject.toml + uv.lock
+> cp .env.example .env                    # then set OPENAI_API_KEY
+> uv run code/main.py                     # -> output.csv
+> uv run code/evaluation/main.py          # -> metrics on the labelled samples + custom cases
 > ```
 
 ---

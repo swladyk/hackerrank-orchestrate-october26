@@ -1,7 +1,7 @@
 """Structural validation of output.csv against the submission contract.
 
 Usage:
-    python code/evaluation/validate_output.py [--output output.csv] [--requests dataset/deletion_requests.csv]
+    uv run code/evaluation/validate_output.py [--output output.csv] [--requests dataset/deletion_requests.csv]
 """
 
 from __future__ import annotations

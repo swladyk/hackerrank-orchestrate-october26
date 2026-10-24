@@ -1,12 +1,12 @@
 """Ghost Data Still Exists — deletion-audit agent.
 
 Usage:
-    python code/main.py                                  # full run -> output.csv
-    python code/main.py --limit 5                        # first 5 cases -> output_subset.csv
-    python code/main.py --cases case_33,case_40          # explicit subset
-    python code/main.py --requests dataset/sample_deletion_requests.csv --output sample_pred.csv
-    python code/main.py --explain case_11 --requests dataset/sample_deletion_requests.csv
-    python code/main.py --offline                        # no API calls: cached LLM answers only
+    uv run code/main.py                                  # full run -> output.csv
+    uv run code/main.py --limit 5                        # first 5 cases -> output_subset.csv
+    uv run code/main.py --cases case_33,case_40          # explicit subset
+    uv run code/main.py --requests dataset/sample_deletion_requests.csv --output sample_pred.csv
+    uv run code/main.py --explain case_11 --requests dataset/sample_deletion_requests.csv
+    uv run code/main.py --offline                        # no API calls: cached LLM answers only
 """
 
 from __future__ import annotations

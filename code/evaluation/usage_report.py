@@ -1,7 +1,7 @@
 """Render evaluation/usage_report.md from the usage JSON saved by the final full run (code/main.py).
 
 Usage:
-    python code/evaluation/usage_report.py [--usage code/evaluation/usage_run.json]
+    uv run code/evaluation/usage_report.py [--usage code/evaluation/usage_run.json]
 """
 
 from __future__ import annotations
