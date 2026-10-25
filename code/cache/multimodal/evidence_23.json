@@ -71,5 +71,6 @@
       "status": "Ready",
       "user_ref": null
     }
-  ]
+  ],
+  "source_sha256": "18b95c1bd8b8956e40216df935498a9f3c181ea2a69b5cd6d3c0841a816d5557"
 }

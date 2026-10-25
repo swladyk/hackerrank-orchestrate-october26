@@ -3,31 +3,10 @@
 from __future__ import annotations
 
 import re
+from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 
-from ..identity import identifier_keys, norm_email, norm_phone
-
-# Resource-id prefix -> owning system (used when the evidence does not name the system).
-PREFIX_SYSTEM = {
-    "account": "account_service",
-    "search": "search_service",
-    "analytics": "analytics_platform",
-    "support": "support_platform",
-    "export": "export_service",
-    "data_flow": "integration_service",
-    "backup": "backup_service",
-    "audit_record": "security_service",
-    "identity": "identity_service",
-    "tombstone": "identity_service",
-    "marketing": "marketing_platform",
-    "legal": "legal_service",
-    "legal_hold": "legal_service",
-    "order": "legal_service",
-    "email_delivery": "email_delivery_service",
-    "cache": "cache_service",
-    "telemetry": "telemetry_service",
-    "attachment": "support_platform",
-}
+from ..identity import identifier_keys, norm_email, norm_phone, user_ref_re
 
 RESOURCE_RE = re.compile(r"\b((?:[a-z]+_)*[a-z]+_\d{3,})\b")
 EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
@@ -42,9 +21,35 @@ REF_FIELDS = {"customer_reference", "subject_reference", "user_id", "user_ref"}
 DIRECT_ID_FIELDS = ("name", "email", "phone", "email_hash")
 
 
-def system_for(resource_id: str) -> str:
-    prefix = resource_id.rsplit("_", 1)[0]
-    return PREFIX_SYSTEM.get(prefix, prefix)
+def resource_prefix(resource_id: str) -> str:
+    return resource_id.rsplit("_", 1)[0]
+
+
+class SystemMap:
+    """Resource-id prefix -> owning system, learned from the data rather than a fixed table.
+
+    Evidence that names its system explicitly (SQL origin_system, ledger/bundle/export system fields) wins;
+    otherwise the most common activity target_system for that prefix is used.
+    """
+
+    def __init__(self, observations: list["Observation"], activity) -> None:
+        explicit: dict[str, Counter] = defaultdict(Counter)
+        targets: dict[str, Counter] = defaultdict(Counter)
+        for o in observations:
+            if o.system_id and o.resource_id != "*":
+                explicit[resource_prefix(o.resource_id)][o.system_id] += 1
+        for a in activity:
+            if a.resource_id and a.target_system:
+                targets[resource_prefix(a.resource_id)][a.target_system] += 1
+        self.by_prefix = {p: (explicit.get(p) or targets[p]).most_common(1)[0][0]
+                          for p in sorted(explicit.keys() | targets.keys())}
+
+    def knows(self, resource_id: str) -> bool:
+        return resource_prefix(resource_id) in self.by_prefix
+
+    def __call__(self, resource_id: str) -> str:
+        prefix = resource_prefix(resource_id)
+        return self.by_prefix.get(prefix, prefix)
 
 
 def canonical_attrs(raw: dict) -> dict:
@@ -73,7 +78,7 @@ class Observation:
     file_id: str
     file_captured_at: str
     observed_at: str
-    system_id: str
+    system_id: str | None  # None until the index resolves it from the learned SystemMap
     resource_id: str
     attrs: dict
     source: str  # parser/table tag, e.g. "sql:customer_data_read_replica"
@@ -137,11 +142,11 @@ class Observation:
 
     def user_ref(self) -> str | None:
         value = self.attrs.get("user_ref")
-        return value if isinstance(value, str) and value.startswith("user_") else None
+        return value if isinstance(value, str) and user_ref_re().match(value) else None
 
     def flow_enabled(self) -> bool | None:
         result = self.result
-        if result == "ACTIVE" and self.system_id == "integration_service":
+        if result == "ACTIVE":  # only asked of data-flow resources
             return True
         if result == "DISABLED":
             return False
@@ -151,7 +156,7 @@ class Observation:
 
     def restore_allowed(self) -> bool | None:
         result = self.result
-        if result == "ACTIVE" and self.system_id == "backup_service":
+        if result == "ACTIVE":  # only asked of backup resources
             return True
         if result == "BLOCKED":
             return False

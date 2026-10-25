@@ -4,16 +4,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from .config import DATASET_DIR, DEFAULT_REQUESTS
 from .evidence.index import EvidenceIndex, citable
 from .evidence.model import Observation
 from .identity import IdentityResolver, Person
 from .llm.client import LLMClient
-from .llm.intent import IntentClassifier, heuristic
+from .llm.intent import IntentClassifier
 from .llm.usage import UsageMonitor
-from .loaders import Request, load_requests
+from .loaders import Request, discover_request_files, load_requests
 from .planner import Assessment, build_steps
-from .policy import Policy, category_of
+from .policy import Policy
 from .workflow import WorkflowLinker
 
 
@@ -35,13 +34,22 @@ class Auditor:
         self.intent = IntentClassifier(self.llm, offline=offline, fresh=fresh)
         self.identities = IdentityResolver()
         self.index = EvidenceIndex(offline=offline, llm=self.llm, fresh=fresh)
-        self.policy = Policy()
-        # Every known request competes for worker activity, so attribution does not depend on the subset run.
-        known = {r.case_id: r for path in (DATASET_DIR / "sample_deletion_requests.csv", DEFAULT_REQUESTS)
-                 for r in load_requests(path)}
+        self.policy = Policy(self.index.observations)
+        # Every known request (any dataset CSV with the request schema) competes for worker activity, so
+        # attribution does not depend on the subset run.
+        known = {r.case_id: r for path in discover_request_files() for r in load_requests(path)}
         known.update({r.case_id: r for r in requests})
         self.workflow = WorkflowLinker(sorted(known.values(), key=lambda r: r.case_id), self.identities, self.index,
-                                       is_deletion=lambda r: heuristic(r.request_text) == "DELETION")
+                                       is_deletion=self.is_deletion, is_profile=self.is_profile)
+
+    def is_deletion(self, req: Request) -> bool:
+        return self.intent.classify(req.request_text, req.case_id, count=False)["label"] == "DELETION"
+
+    def is_profile(self, resource_id: str) -> bool:
+        """The primary user profile, as categorized by the policy (not by an id prefix)."""
+        system_id = self.index.system_of(resource_id)
+        return self.policy.category_of(resource_id, system_id, self.index.by_resource.get(resource_id, [])) \
+            == "USER_PROFILE"
 
     # ------------------------------------------------------------------------------------------ case
     def audit(self, req: Request) -> CaseResult:
@@ -54,8 +62,8 @@ class Auditor:
         workflow = self.workflow.resources_for(req.case_id)
         relevant = self.relevant_resources(person, req)
         resources = relevant | {
-            r for r in workflow if r.startswith("account_") or self.index.observations_for(r, req.audit_at)}
-        if not any(r.startswith("account_") for r in resources):
+            r for r in workflow if self.is_profile(r) or self.index.observations_for(r, req.audit_at)}
+        if not any(self.is_profile(r) for r in resources):
             # The worker never named the profile. Seeded accounts use the same number as the stable user id.
             number = person.user_id.removeprefix("user_")
             if number.isdigit():
@@ -82,12 +90,12 @@ class Auditor:
         system_id = self.index.system_of(resource_id)
         if not observations:
             # Only the worker activity names this record; the newest complete listing shows whether it is gone.
-            category = category_of(system_id, [])
+            category = self.policy.category_of(resource_id, system_id, [])
             if self.policy.action(category) != "DELETE":
                 return None
             proof = self.index.absence_proof(resource_id, system_id, req.audit_at)
             return Assessment(system_id, resource_id, category, "OK", "ABSENT", proof.file_id if proof else "")
-        category = category_of(system_id, observations)
+        category = self.policy.category_of(resource_id, system_id, observations)
         action = self.policy.action(category)
 
         if category == "DATA_FLOW":
@@ -129,13 +137,24 @@ class Auditor:
                              lambda o: o.exists() is True)
 
         present = [o for o in latest if o.exists()]
-        exposed = any(exposure(o, category) for o in present)
+        exposed = any(self.exposure(o, category) for o in present)
         if action == "ANONYMIZE":
             return self.make(system_id, resource_id, category, "EXPOSED_ANONYMIZE" if exposed else "OK",
                              "ANONYMIZED", observations, req, lambda o: o.exists() is True and
-                             bool(exposure(o, category)) == exposed)
+                             bool(self.exposure(o, category)) == exposed)
         return self.make(system_id, resource_id, category, "EXPOSED_REDACT" if exposed else "OK", "REDACTED",
-                         observations, req, lambda o: o.exists() is True and bool(exposure(o, category)) == exposed)
+                         observations, req,
+                         lambda o: o.exists() is True and bool(self.exposure(o, category)) == exposed)
+
+    def exposure(self, o: Observation, category: str) -> list[str]:
+        """Identifiers the policy forbids for this category that are still visible in the observation."""
+        fields = o.exposed_fields()
+        if o.attrs.get("detector") == "direct_identifier" or \
+                str(o.attrs.get("direct_identifiers", "0")) not in {"0", "None"}:
+            fields = fields + ["scan"]
+        if self.policy.action(category) == "ANONYMIZE" and o.user_ref():  # anonymized means unlinked
+            fields = fields + ["user_ref"]
+        return fields
 
     def make(self, system_id: str, resource_id: str, category: str, verdict: str, final_state: str,
              observations: list[Observation], req: Request, supports) -> Assessment:
@@ -166,11 +185,3 @@ def retention_until(observations: list[Observation]) -> str | None:
     return None
 
 
-def exposure(o: Observation, category: str) -> list[str]:
-    """Identifiers the policy forbids for this category that are still visible in the observation."""
-    fields = o.exposed_fields()
-    if o.attrs.get("detector") == "direct_identifier" or str(o.attrs.get("direct_identifiers", "0")) not in {"0", "None"}:
-        fields = fields + ["scan"]
-    if category in {"ANALYTICS_PROFILE", "PRODUCT_TELEMETRY"} and o.user_ref():
-        fields = fields + ["user_ref"]
-    return fields

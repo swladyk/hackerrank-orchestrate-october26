@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import csv
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from pathlib import Path
 
 from .config import DATASET_DIR
@@ -48,6 +48,17 @@ class EvidenceFile:
 def load_requests(path: Path) -> list[Request]:
     rows = [Request(**row) for row in read_csv(path)]
     return sorted(rows, key=lambda r: case_sort_key(r.case_id))
+
+
+def discover_request_files(directory: Path = DATASET_DIR) -> list[Path]:
+    """Every CSV in the dataset whose header is exactly the request schema (found by shape, not by name)."""
+    expected = [f.name for f in fields(Request)]
+    found = []
+    for path in sorted(directory.glob("*.csv")):
+        with open(path, encoding="utf-8", newline="") as handle:
+            if next(csv.reader(handle), None) == expected:
+                found.append(path)
+    return found
 
 
 def case_sort_key(case_id: str) -> tuple[str, int]:

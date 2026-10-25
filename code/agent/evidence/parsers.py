@@ -10,7 +10,7 @@ from collections import defaultdict
 
 from ..identity import identifier_keys
 from ..loaders import EvidenceFile
-from .model import Observation, canonical_attrs, system_for
+from .model import Observation, canonical_attrs
 
 TS_RE = re.compile(r"^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)")
 SYSLOG_RE = re.compile(r"^(\S+) <\d+>\d+ (\S+) (\S+) (\S+) \S+ \S+ (.*)$")
@@ -31,7 +31,7 @@ def obs(ev: EvidenceFile, observed_at: str | None, resource_id: str, raw: dict, 
         file_id=ev.file_id,
         file_captured_at=ev.captured_at,
         observed_at=observed_at or ev.captured_at,
-        system_id=system_id or system_for(resource_id),
+        system_id=system_id,  # None when the evidence does not name it; the index resolves it later
         resource_id=resource_id,
         attrs=attrs,
         source=source,
@@ -78,18 +78,18 @@ def parse_sql(ev: EvidenceFile) -> list[Observation]:
                 data["source_resource"] = data.pop("source_resource_id")
             out.append(obs(ev, ev.captured_at, resource_id, data, f"sql:{table}", system))
     conn.close()
-    # A scoped inventory, or a profiles-only replica capture, lists every record of that system.
-    covered = set(scope) if scope else ({"account_service"} if all("profiles" in t for t in tables) else set())
-    return out + [coverage(ev, scope.get(system, ev.captured_at), system,
-                           {o.resource_id for o in out if o.system_id == system or
-                            (o.system_id is None and system_for(o.resource_id) == system)})
-                  for system in sorted(covered)]
+    # A scoped inventory lists every record of each scoped system. An unscoped dump is a candidate listing;
+    # the index keeps it only if every row resolves to one system (members are filled in after resolution).
+    if scope:
+        return out + [coverage(ev, scope[system], system) for system in sorted(scope)]
+    return out + [coverage(ev, ev.captured_at, None)] if out else out
 
 
-def coverage(ev: EvidenceFile, at: str, system: str, resource_ids: set[str]) -> Observation:
-    """A complete listing of one system's records: anything not listed was absent at `at`."""
-    return Observation(ev.file_id, ev.captured_at, at, system, "*", {"_coverage": frozenset(resource_ids)},
-                       "coverage")
+def coverage(ev: EvidenceFile, at: str, system: str | None, resource_ids: set[str] | None = None) -> Observation:
+    """A complete listing of one system's records: anything not listed was absent at `at`.
+    `resource_ids=None` means "this file's rows of that system", resolved by the index."""
+    members = frozenset(resource_ids) if resource_ids is not None else None
+    return Observation(ev.file_id, ev.captured_at, at, system, "*", {"_coverage": members}, "coverage")
 
 
 # --------------------------------------------------------------------------------------------- JSON
@@ -215,10 +215,7 @@ def parse_log(ev: EvidenceFile) -> list[Observation]:
                                                           "duration_ms", "latency_ms", "took_ms", "shard"}}
         ts = data.pop("_ts")
         system = data.pop("system", None)
-        service = data.pop("service", None)
-        if not system and service and service.endswith(("_service", "_platform")) and \
-                system_for(resource_id) == service:
-            system = service
+        data.pop("service", None)  # emitting process (often a replica/worker name), not the owning system
         links = set(by_trace.get(kv.get("trace_id", ""), set()))
         links |= identifier_keys(data.get("subject_reference"))
         event = data.get("event", "")

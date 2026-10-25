@@ -818,3 +818,56 @@ branch=main
 repo_root=/home/stanislaw/hackerrank-orchestrate-october26
 worktree=main
 parent_agent=none
+
+## [2026-10-25T12:49:18+01:00] SESSION START
+
+tool=Claude Code
+model=claude-opus-5-5
+Repo Root: /home/stanislaw/hackerrank-orchestrate-october26
+Branch: main
+Worktree: main
+Parent Agent: none
+Language: py
+Time Remaining: not configured
+
+## [2026-10-25T12:49:18+01:00] Audit codebase for hardcoded dataset-specific logic and fix
+
+User Prompt (verbatim, secrets redacted):
+Read the repo and audit the whole codebase for hardcoded test labels, request IDs, file names, customer identifiers, or anything that only works for this specific dataset.
+List every finding with file and line. Fix them so the logic is driven by the input data and rules.
+
+Agent Response Summary:
+Audited code/agent and code/evaluation. Replaced dataset-specific constants with values learned from participant data: resource-prefix->system map (evidence + activity targets), system/prefix->category (record_type + deletion_rules.csv names), user-id shape (user_identities.csv), deletion-worker source (emitter of remediation operations), request-file discovery by CSV header, catalog-link parsing without a fixed sentence template, profile detection by policy category, SQL coverage by single-system rows, generic offline intent cues, generic vision prompt examples, and content-hash-checked multimodal caches. Removed the account_<user number> synthesis shortcut (no participant evidence supports it), which costs one sample step (case_04); fixed object_19 being assigned a non-existent "object" system. Offline full run differs from the committed output.csv in 9 cases (step lists only, no status changes); output.csv and evaluation_report.md were not regenerated.
+
+Actions:
+* Edited code/agent/{audit,identity,loaders,policy,workflow}.py, code/agent/evidence/{index,model,multimodal,parsers}.py, code/agent/llm/{intent,vision}.py
+* Added source_sha256 to code/cache/multimodal/*.json
+* Ran offline full run + sample/custom evaluation before and after for regression diffs
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none
+
+## [2026-10-25T12:55:27+01:00] Restore account-number shortcut
+
+User Prompt (verbatim, secrets redacted):
+Ok, bring back the account number shortcut. The rest is correct as it is right now
+
+Agent Response Summary:
+Restored the account_<user number> fallback in Auditor.audit, keeping the new policy-based profile check (is_profile) instead of the old "account_" prefix test. The offline full run now matches the committed output.csv except case_61, where object_19's system_id is corrected from "object" to "object_storage"; sample metrics are back to the baseline (100% status, 99.0% step F1, 90.6% sequence). All other data-driven changes were left as they are.
+
+Actions:
+* Edited code/agent/audit.py
+* Ran offline full run + sample evaluation regression check
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none

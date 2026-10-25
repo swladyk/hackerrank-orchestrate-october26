@@ -29,12 +29,15 @@ INTENT_QUESTION = {
     ],
 }
 
-# Offline fallback (no API key and no cached answer): explicit negations first, then deletion verbs.
-NEGATION_RE = re.compile(
-    r"not (asking|a request) (for|to) (deletion|erase)|don't delete|do not (delete|close)|leave the account|"
-    r"keep the account|marketing lists only|stop the promotional|reset(ting)? the login|send me a copy|"
-    r"copy of (the information|last year)|download my|what personal information|replace it with|"
-    r"change the email|without removing|correct it",
+# Offline fallback (no API key and no cached answer). Generic intent cues, not dataset sentences:
+# 1. the customer explicitly rules deletion out, or limits the request to an opt-out -> NOT_DELETION;
+# 2. otherwise any deletion verb (multilingual) -> DELETION; 3. anything else -> NOT_DELETION.
+KEEP_RE = re.compile(
+    r"\bnot (?:asking|a request|requesting) (?:for|to) (?:delet|eras|remov|clos)|"
+    r"\b(?:don't|do not|without|never) (?:delet|eras|remov|clos|chang)\w*|"
+    r"\b(?:keep|leave) (?:the|my) (?:account|profile|data)|"
+    r"\bstill (?:use|using|want|need)\b|"
+    r"\b(?:marketing|promotional|newsletter)\w*[^.]*\bonly\b|\bonly\b[^.]*\b(?:marketing|promotional|newsletter)",
     re.I,
 )
 DELETION_RE = re.compile(
@@ -49,7 +52,7 @@ def text_key(text: str) -> str:
 
 
 def heuristic(text: str) -> str:
-    if NEGATION_RE.search(text):
+    if KEEP_RE.search(text):
         return "NOT_DELETION"
     return "DELETION" if DELETION_RE.search(text) else "NOT_DELETION"
 
@@ -66,10 +69,12 @@ class IntentClassifier:
         if cache_path.exists():
             self.cache = json.loads(cache_path.read_text(encoding="utf-8"))
 
-    def classify(self, text: str, case_id: str | None = None) -> dict:
+    def classify(self, text: str, case_id: str | None = None, count: bool = True) -> dict:
+        """`count=False` for look-ups that are not part of the audited run (they do not inflate usage stats)."""
         key = text_key(text)
         if key in self.cache and (not self.fresh or key in self.seen):
-            self.llm.monitor.hit("intent")
+            if count:
+                self.llm.monitor.hit("intent")
             return {**self.cache[key], "cached": True}
         if self.offline or not self.llm.available:
             return {"label": heuristic(text), "confidence": None, "source": "heuristic", "cached": False}

@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 
 from ..config import CACHE_DIR
 from ..loaders import EvidenceFile
-from .model import PREFIX_SYSTEM, Observation, canonical_attrs, system_for
+from .model import Observation, SystemMap, canonical_attrs
 
 MULTIMODAL_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg"}
 MULTIMODAL_CACHE = CACHE_DIR / "multimodal"
@@ -24,8 +25,8 @@ KIND_CATEGORY = {
 }
 
 
-def is_resource(token: str) -> bool:
-    return bool(RESOURCE_TOKEN.match(token)) and token.rsplit("_", 1)[0] in PREFIX_SYSTEM
+def is_resource(token: str, systems: SystemMap) -> bool:
+    return bool(RESOURCE_TOKEN.match(token)) and systems.knows(token)
 
 
 def status_result(status: str | None, kind: str) -> str | None:
@@ -45,30 +46,39 @@ def status_result(status: str | None, kind: str) -> str | None:
     return None
 
 
-def resolve_resource(refs: list[str], aliases: dict[str, str]) -> str | None:
-    return next((r for r in refs if is_resource(r)), None) or next((aliases[r] for r in refs if r in aliases), None)
+def resolve_resource(refs: list[str], aliases: dict[str, str], systems: SystemMap) -> str | None:
+    return next((r for r in refs if is_resource(r, systems)), None) or \
+        next((aliases[r] for r in refs if r in aliases), None)
 
 
-def shared_reference_resources(records: list[dict], aliases: dict[str, str]) -> dict[str, str]:
+def shared_reference_resources(records: list[dict], aliases: dict[str, str], systems: SystemMap) -> dict[str, str]:
     """Non-resource references (ticket, order numbers) that point at exactly one resource in this artifact."""
     seen: dict[str, set[str]] = {}
     for rec in records:
         refs = [rec.get("reference") or ""] + list(rec.get("related_references") or [])
-        resource_id = resolve_resource(refs, aliases)
+        resource_id = resolve_resource(refs, aliases, systems)
         if not resource_id:
             continue
         for r in refs:
-            if r and not is_resource(r) and r not in aliases:
+            if r and not is_resource(r, systems) and r not in aliases:
                 seen.setdefault(r, set()).add(resource_id)
     return {r: next(iter(ids)) for r, ids in seen.items() if len(ids) == 1}
 
 
-def load_cached(file_id: str) -> dict | None:
-    path = MULTIMODAL_CACHE / f"{file_id}.json"
-    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
+def file_sha256(ev: EvidenceFile) -> str:
+    return hashlib.sha256(ev.path.read_bytes()).hexdigest()
 
 
-def load_multimodal(files: dict[str, EvidenceFile], aliases: dict[str, str], llm=None,
+def load_cached(ev: EvidenceFile) -> dict | None:
+    """A cached extraction counts only if it was made from these exact file bytes (file_ids are reused)."""
+    path = MULTIMODAL_CACHE / f"{ev.file_id}.json"
+    if not path.exists():
+        return None
+    cached = json.loads(path.read_text(encoding="utf-8"))
+    return cached if cached.get("source_sha256") == file_sha256(ev) else None
+
+
+def load_multimodal(files: dict[str, EvidenceFile], aliases: dict[str, str], systems: SystemMap, llm=None,
                     offline: bool = True, fresh: bool = False) -> list[Observation]:
     """Read cached extractions; (re)extract when the cache is missing or only an offline fallback exists."""
     from ..llm.vision import extract_file
@@ -77,7 +87,7 @@ def load_multimodal(files: dict[str, EvidenceFile], aliases: dict[str, str], llm
     for file_id, ev in sorted(files.items()):
         if ev.path.suffix.lower() not in MULTIMODAL_SUFFIXES:
             continue
-        extraction = load_cached(file_id)
+        extraction = load_cached(ev)
         llm_ready = llm is not None and llm.available and not offline
         stale = extraction is None or not str(extraction.get("method", "")).startswith("llm")
         if extraction is None or (llm_ready and (stale or fresh)):
@@ -86,11 +96,11 @@ def load_multimodal(files: dict[str, EvidenceFile], aliases: dict[str, str], llm
         if not extraction:
             continue
         records = extraction.get("records", [])
-        shared = shared_reference_resources(records, aliases)
+        shared = shared_reference_resources(records, aliases, systems)
         for rec in records:
             refs = [rec.get("reference") or ""] + list(rec.get("related_references") or [])
             kind = rec.get("record_kind") or "other"
-            resource_id = resolve_resource(refs, aliases)
+            resource_id = resolve_resource(refs, aliases, systems)
             if not resource_id and kind in KIND_CATEGORY:
                 # e.g. an attachment named only by its file name, filed under the same ticket/order
                 # as a support_* record in this artifact: it is that resource's attachment.
@@ -112,7 +122,7 @@ def load_multimodal(files: dict[str, EvidenceFile], aliases: dict[str, str], llm
                 file_id=file_id,
                 file_captured_at=ev.captured_at,
                 observed_at=ev.captured_at,  # the artifact's capture time; displayed dates are business dates
-                system_id=system_for(resource_id),
+                system_id=systems(resource_id),
                 resource_id=resource_id,
                 attrs=attrs,
                 source=f"multimodal:{ev.path.suffix.lstrip('.')}",

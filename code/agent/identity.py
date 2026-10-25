@@ -6,11 +6,23 @@ import hashlib
 import re
 import unicodedata
 from dataclasses import dataclass, field
+from functools import cache
 
 from .loaders import load_audit_log, load_identities
 
 IDENTITY_FIELDS = ("name", "email", "phone", "email_hash")
-USER_REF_RE = re.compile(r"^user_\d+$")
+
+
+@cache
+def user_ref_pattern() -> str:
+    """Regex for stable internal user ids, generalized from the snapshot ids (digit runs -> \\d+)."""
+    shapes = {re.sub(r"\d+", r"\\d+", re.escape(row["user_id"])) for row in load_identities()}
+    return "(?:" + "|".join(sorted(shapes)) + ")" if shapes else r"(?!x)x"
+
+
+@cache
+def user_ref_re() -> re.Pattern:
+    return re.compile(rf"^{user_ref_pattern()}$")
 
 
 def norm_email(value: str) -> str:
@@ -40,7 +52,7 @@ def identifier_keys(value: object) -> set[str]:
     keys: set[str] = set()
     if "@" in text:
         keys.add("email:" + norm_email(text))
-    elif USER_REF_RE.match(text):
+    elif user_ref_re().match(text):
         keys.add("user:" + text)
     elif re.fullmatch(r"[0-9a-fA-F]{64}", text):
         keys.add("hash:" + text.lower())

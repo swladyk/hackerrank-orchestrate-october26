@@ -17,7 +17,7 @@ jobs could, the record is left out rather than guessed. Non-deletion requests ha
 
 from __future__ import annotations
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import datetime, timedelta
 
 from .evidence.index import EvidenceIndex
@@ -27,13 +27,19 @@ from .loaders import Activity, Request
 ANCHOR_BEFORE = timedelta(hours=1.6)
 ANCHOR_AFTER = timedelta(minutes=15)
 FOLLOW_AFTER = timedelta(hours=2.5)
-POLICY_EVENTS = {"ANONYMIZE_RECORD", "REDACT_RECORD", "DELETE_RECORD", "DISABLE_DATA_FLOW", "BLOCK_RESTORE",
-                 "CHECK_DATA_FLOW", "CHECK_RESTORE_ACCESS"}
+REMEDIATION_EVENTS = {"ANONYMIZE_RECORD", "REDACT_RECORD", "DELETE_RECORD", "DISABLE_DATA_FLOW", "BLOCK_RESTORE"}
+POLICY_EVENTS = REMEDIATION_EVENTS | {"CHECK_DATA_FLOW", "CHECK_RESTORE_ACCESS"}
 STATUS_RESULT = {"COMPLETE": "SUCCESS", "PARTIALLY_COMPLETE": "PARTIAL", "NOT_STARTED": "FAILED"}
 
 
 def ts(value: str) -> datetime:
     return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
+
+
+def deletion_worker(activity: list[Activity]) -> str | None:
+    """The source system that executes remediation operations (the one emitting most of them)."""
+    counts = Counter(a.source_system for a in activity if a.event_type in REMEDIATION_EVENTS)
+    return counts.most_common(1)[0][0] if counts else None
 
 
 def reported_before(a: Activity) -> bool:
@@ -43,13 +49,14 @@ def reported_before(a: Activity) -> bool:
 
 class WorkflowLinker:
     def __init__(self, requests: list[Request], identities: IdentityResolver, index: EvidenceIndex,
-                 is_deletion=lambda req: True) -> None:
+                 is_deletion=lambda req: True, is_profile=lambda resource_id: False) -> None:
         self.owners = self._owners(identities, index)
         self.assigned: dict[str, set[str]] = defaultdict(set)
-        worker = [a for a in index.activity if a.source_system == "deletion_worker" and a.event_type in POLICY_EVENTS]
-        anchors = sorted((a for a in worker if a.event_type == "DELETE_RECORD" and a.resource_id.startswith("account_")),
+        source = deletion_worker(index.activity)
+        worker = [a for a in index.activity if a.source_system == source and a.event_type in POLICY_EVENTS]
+        anchors = sorted((a for a in worker if a.event_type == "DELETE_RECORD" and is_profile(a.resource_id)),
                          key=lambda a: (a.event_time, a.activity_id))
-        follow = sorted((a for a in worker if not a.resource_id.startswith("account_")),
+        follow = sorted((a for a in worker if not is_profile(a.resource_id)),
                         key=lambda a: (a.event_time, a.activity_id))
         users = {}
         self.job_of: dict[str, str] = {}  # case_id -> job key; one person's request reported together = one job

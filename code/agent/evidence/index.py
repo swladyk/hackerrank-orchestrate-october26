@@ -5,15 +5,13 @@ from __future__ import annotations
 import re
 from collections import defaultdict
 
-from ..identity import Person, identifier_keys
+from ..identity import Person, identifier_keys, user_ref_pattern
 from ..loaders import Activity, load_activity, load_manifest
-from .model import Observation, system_for
+from .model import EMAIL_RE, Observation, SystemMap
 from .multimodal import load_multimodal
 from .parsers import parse_file
 
-# "Data catalog linked tombstone_17 (user_17) to x@y and user_17." / "... confirmed object_19 (file.pdf) belongs
-# only to x@y and user_07; ..." -> resource, displayed alias, email, user
-LINK_RE = re.compile(r"(?:linked|confirmed) (\S+) \(([^)]+)\) (?:to|belongs only to) (\S+) and (user_\d+)")
+LINK_EVENT = "LINK_RESOURCE_IDENTITY"
 
 
 class EvidenceIndex:
@@ -22,16 +20,23 @@ class EvidenceIndex:
         self.activity = load_activity()
         self.catalog_links: list[tuple[str, str, Activity]] = []  # (resource_id, identity key, activity)
         self.aliases: dict[str, str] = {}  # displayed reference (user_17, NST-..., file name) -> resource_id
+        user_re = re.compile(rf"\b{user_ref_pattern()}\b")
         for a in self.activity:
-            if a.event_type == "LINK_RESOURCE_IDENTITY" and (m := LINK_RE.search(a.details)):
-                self.aliases[m.group(2)] = m.group(1)
-                for raw in (m.group(3), m.group(4)):
-                    for key in identifier_keys(raw.rstrip(".;,")):
-                        self.catalog_links.append((m.group(1), key, a))
+            if a.event_type != LINK_EVENT or not a.resource_id:
+                continue
+            # "<resource> (<displayed alias>) ... <email> ... <user id>": the alias is how artifacts show it
+            if m := re.search(re.escape(a.resource_id) + r" \(([^)]+)\)", a.details):
+                self.aliases[m.group(1)] = a.resource_id
+            for raw in EMAIL_RE.findall(a.details) + user_re.findall(a.details):
+                for key in identifier_keys(raw):
+                    self.catalog_links.append((a.resource_id, key, a))
         self.observations: list[Observation] = []
         for ev in sorted(self.files.values(), key=lambda e: e.file_id):
             self.observations.extend(parse_file(ev))
-        self.observations.extend(load_multimodal(self.files, self.aliases, llm=llm, offline=offline, fresh=fresh))
+        self.systems = SystemMap(self.observations, self.activity)
+        self.observations = resolve_systems(self.observations, self.systems)
+        self.observations.extend(load_multimodal(self.files, self.aliases, self.systems, llm=llm, offline=offline,
+                                                 fresh=fresh))
         self.by_resource: dict[str, list[Observation]] = defaultdict(list)
         self.by_key: dict[str, set[str]] = defaultdict(set)
         self.coverage: dict[str, list[Observation]] = defaultdict(list)  # system -> complete listings
@@ -77,8 +82,30 @@ class EvidenceIndex:
 
     def system_of(self, resource_id: str) -> str:
         systems = {o.system_id for o in self.by_resource.get(resource_id, ())}
-        guess = system_for(resource_id)
+        guess = self.systems(resource_id)
         return guess if guess in systems or not systems else sorted(systems)[0]
+
+
+def resolve_systems(observations: list[Observation], systems: SystemMap) -> list[Observation]:
+    """Fill in owning systems the evidence left implicit, then settle deferred SQL listings: an unscoped dump
+    is a complete listing only when all of its rows belong to one system."""
+    rows_by_file: dict[str, list[Observation]] = defaultdict(list)
+    for o in observations:
+        if o.resource_id != "*":
+            o.system_id = o.system_id or systems(o.resource_id)
+            rows_by_file[o.file_id].append(o)
+    out = []
+    for o in observations:
+        if o.resource_id == "*" and o.attrs["_coverage"] is None:
+            rows = rows_by_file.get(o.file_id, [])
+            if o.system_id is None:
+                owners = {r.system_id for r in rows}
+                if len(owners) != 1:
+                    continue
+                o.system_id = owners.pop()
+            o.attrs["_coverage"] = frozenset(r.resource_id for r in rows if r.system_id == o.system_id)
+        out.append(o)
+    return out
 
 
 def visible(o: Observation, audit_at: str) -> bool:
