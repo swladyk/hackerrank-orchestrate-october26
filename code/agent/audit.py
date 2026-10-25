@@ -154,6 +154,12 @@ class Auditor:
         if not latest:
             return None
         exists = any(o.exists() for o in latest)
+        if exists and action != "RETAIN":
+            # A newer citable complete listing of the system that omits the record supersedes older sightings.
+            # Not for retained records: those may be archived outside the listed system, so omission is no proof.
+            proof = self.index.absence_proof(resource_id, system_id, req.audit_at)
+            if proof and proof.observed_at > latest[0].observed_at:
+                exists = False
 
         if action == "RETAIN":
             until = retention_until(observations)

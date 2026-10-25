@@ -940,3 +940,23 @@ branch=main
 repo_root=/home/stanislaw/hackerrank-orchestrate-october26
 worktree=main
 parent_agent=none
+
+## [2026-10-25T13:35:00+01:00] Newer complete listing overrides older sightings (case_126)
+
+User Prompt (verbatim, secrets redacted):
+yes go ahead, test it on the samples
+
+Agent Response Summary:
+In Auditor.assess, a record last seen present is now treated as absent when a newer citable complete listing of its system (absence_proof) omits it. The first version also applied to retained records and dropped VERIFY_RECORD_PRESENT for audit_record_* in six samples (step F1 99.0% -> 97.9%, sequence 90.6% -> 78.1%), since audit records are archived outside the listed system; the rule now skips RETAIN categories. Final: samples unchanged at baseline (100% status, 99.0% step F1, 90.6% sequence), custom cases 100%, full run differs only in case_126 (INCOMPLETE -> COMPLETE, three verifications citing evidence_87), validator 0 errors / 0 warnings, 14 unit tests pass. output.csv not regenerated.
+
+Actions:
+* Edited code/agent/audit.py
+* Ran offline full run, evaluation/main.py --offline, validate_output.py, unit tests
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none
