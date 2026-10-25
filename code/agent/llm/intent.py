@@ -7,8 +7,9 @@ import json
 import re
 from pathlib import Path
 
+from .. import runlog
 from ..config import CACHE_DIR, DECISIONS_MODEL
-from .client import LLMClient
+from .client import LLMClient, LLMRejected
 
 INTENT_CACHE = CACHE_DIR / "intent.json"
 
@@ -47,6 +48,28 @@ DELETION_RE = re.compile(
 )
 
 
+INTENT_LABELS = {c["value"] for c in INTENT_QUESTION["choices"]}
+
+
+def check_intent(response) -> str | None:
+    """Validation of a Decisions answer: one choice answer with a known label and a confidence in [0, 1]."""
+    answers = getattr(response, "answers", None) or []
+    if not answers:
+        return "no answer was returned"
+    answer = answers[0]
+    if getattr(answer, "type", "") != "choice":
+        return f"expected a choice answer, got {getattr(answer, 'type', None)!r} (refusal or wrong format)"
+    if str(getattr(answer, "choice", "")) not in INTENT_LABELS:
+        return f"choice {getattr(answer, 'choice', None)!r} is not one of {sorted(INTENT_LABELS)}"
+    try:
+        confidence = float(getattr(answer, "confidence", None))
+    except (TypeError, ValueError):
+        return "confidence is missing or not a number"
+    if not 0.0 <= confidence <= 1.0:
+        return f"confidence {confidence} is outside [0, 1]"
+    return None
+
+
 def text_key(text: str) -> str:
     return hashlib.sha256(text.strip().encode("utf-8")).hexdigest()
 
@@ -78,13 +101,16 @@ class IntentClassifier:
             return {**self.cache[key], "cached": True}
         if self.offline or not self.llm.available:
             return {"label": heuristic(text), "confidence": None, "source": "heuristic", "cached": False}
-        response = self.llm.decide(DECISIONS_MODEL, text, [INTENT_QUESTION], case_id)
+        try:
+            response = self.llm.decide(DECISIONS_MODEL, text, [INTENT_QUESTION], case_id, check=check_intent)
+        except LLMRejected as exc:
+            # Not cached: a later run retries the model instead of reusing the deterministic fallback.
+            label = heuristic(text)
+            runlog.event("intent_fallback", f"model gave no valid answer ({exc}); heuristic -> {label}", case_id)
+            return {"label": label, "confidence": None, "source": "heuristic_after_failure", "cached": False}
         answer = response.answers[0]
-        if getattr(answer, "type", "") != "choice":  # refusal -> fall back to the deterministic rule
-            result = {"label": heuristic(text), "confidence": None, "source": "heuristic_after_refusal"}
-        else:
-            result = {"label": str(answer.choice), "confidence": round(float(answer.confidence), 4),
-                      "source": f"decisions:{response.model}"}
+        result = {"label": str(answer.choice), "confidence": round(float(answer.confidence), 4),
+                  "source": f"decisions:{getattr(response, 'model', None) or DECISIONS_MODEL}"}
         self.cache[key] = result
         self.seen.add(key)
         self.save()

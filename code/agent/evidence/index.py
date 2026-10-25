@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from collections import defaultdict
 
+from .. import runlog
 from ..identity import Person, identifier_keys, user_ref_pattern
 from ..loaders import Activity, load_activity, load_manifest
 from .model import EMAIL_RE, Observation, SystemMap
@@ -32,7 +33,10 @@ class EvidenceIndex:
                     self.catalog_links.append((a.resource_id, key, a))
         self.observations: list[Observation] = []
         for ev in sorted(self.files.values(), key=lambda e: e.file_id):
-            self.observations.extend(parse_file(ev))
+            try:
+                self.observations.extend(parse_file(ev))
+            except Exception as exc:  # one unreadable artifact must not stop the audit of every case
+                runlog.event("evidence_error", f"{ev.file_id} ({ev.path.name}) skipped: {type(exc).__name__}: {exc}")
         self.systems = SystemMap(self.observations, self.activity)
         self.observations = resolve_systems(self.observations, self.systems)
         self.observations.extend(load_multimodal(self.files, self.aliases, self.systems, llm=llm, offline=offline,

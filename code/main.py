@@ -7,6 +7,7 @@ Usage:
     uv run code/main.py --requests dataset/sample_deletion_requests.csv --output sample_pred.csv
     uv run code/main.py --explain case_11 --requests dataset/sample_deletion_requests.csv
     uv run code/main.py --offline                        # no API calls: cached LLM answers only
+    failures/fallbacks (retries, refusals, API errors, repaired rows) -> code/evaluation/run_events.jsonl
 """
 
 from __future__ import annotations
@@ -17,6 +18,7 @@ import sys
 import time
 from pathlib import Path
 
+from agent import runlog
 from agent.audit import Auditor
 from agent.config import DEFAULT_OUTPUT, DEFAULT_REQUESTS, DEFAULT_SUBSET_OUTPUT, EVALUATION_DIR, REPO_ROOT
 from agent.loaders import load_requests
@@ -34,6 +36,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--offline", action="store_true", help="never call the API; use caches/fallbacks")
     parser.add_argument("--fresh", action="store_true", help="ignore LLM caches and call the models again")
     parser.add_argument("--usage-out", type=Path, default=None, help="where to save the usage JSON")
+    parser.add_argument("--events-out", type=Path, default=None,
+                        help="where to save the failure/fallback event log (JSON lines)")
     return parser.parse_args(argv)
 
 
@@ -50,10 +54,11 @@ def main(argv: list[str]) -> int:
         requests = [r for r in requests if r.case_id == args.explain]
 
     started = time.time()
+    runlog.reset()
     auditor = Auditor(requests, offline=args.offline, fresh=args.fresh)
     results = []
     for i, req in enumerate(requests, start=1):
-        result = auditor.audit(req)
+        result = auditor.run(req)
         auditor.monitor.cases.append(req.case_id)
         results.append(result)
         print(f"[{i}/{len(requests)}] {req.case_id} {result.status:<14} steps={len(result.steps):<3} "
@@ -69,6 +74,9 @@ def main(argv: list[str]) -> int:
     print(auditor.monitor.report_text(), file=sys.stderr)
     usage_out = args.usage_out or EVALUATION_DIR / ("usage_run_subset.json" if subset else "usage_run.json")
     auditor.monitor.save(resolve(usage_out))
+    events_out = args.events_out or EVALUATION_DIR / ("run_events_subset.jsonl" if subset else "run_events.jsonl")
+    runlog.save(resolve(events_out))
+    print(f"failures/fallbacks: {runlog.counts() or 'none'} -> {resolve(events_out)}", file=sys.stderr)
     print(f"elapsed {time.time() - started:.1f}s", file=sys.stderr)
     return 0
 

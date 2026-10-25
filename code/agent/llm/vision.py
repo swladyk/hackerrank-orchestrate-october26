@@ -11,6 +11,7 @@ import json
 import re
 from pathlib import Path
 
+from .. import runlog
 from ..config import VISION_MODEL
 from ..identity import user_ref_pattern
 from ..loaders import EvidenceFile
@@ -83,8 +84,42 @@ def extract_with_llm(ev: EvidenceFile, llm, model: str = VISION_MODEL) -> dict:
         data = base64.b64encode(ev.path.read_bytes()).decode("ascii")
         content = [{"type": "input_text", "text": EXTRACTION_PROMPT},
                    {"type": "input_image", "image_url": f"data:{mime};base64,{data}", "detail": "high"}]
-    raw = llm.respond_json(model, content, SCHEMA, "vision", None)
-    return {"file_id": ev.file_id, "method": f"llm:{model}", **json.loads(raw)}
+    doc = llm.respond_json(model, content, SCHEMA, "vision", None, check=check_extraction)
+    return {"file_id": ev.file_id, "method": f"llm:{model}", **doc}
+
+
+RECORD_KINDS = {"account_profile", "search_document", "analytics_profile", "support_message", "support_attachment",
+                "customer_export", "marketing_profile", "connector_data_flow", "backup_archive",
+                "security_audit_record", "retained_legal_record", "deleted_account_reference", "email_delivery_log",
+                "other"}
+ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+ISO_TS_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:?\d{2})?$")
+
+
+def check_extraction(doc: dict) -> str | None:
+    """Validation of an extraction beyond the JSON schema: field formats the downstream parser relies on."""
+    records = doc.get("records")
+    if not isinstance(records, list):
+        return "`records` must be an array"
+    problems = []
+    for i, rec in enumerate(records):
+        if not isinstance(rec, dict):
+            problems.append(f"records[{i}] is not an object")
+            continue
+        missing = [k for k in RECORD_SCHEMA["required"] if k not in rec]
+        if missing:
+            problems.append(f"records[{i}] is missing {missing}")
+        if not str(rec.get("reference") or "").strip():
+            problems.append(f"records[{i}].reference is empty")
+        if rec.get("record_kind") not in RECORD_KINDS:
+            problems.append(f"records[{i}].record_kind {rec.get('record_kind')!r} is not an allowed kind")
+        if rec.get("email") is not None and "@" not in str(rec["email"]):
+            problems.append(f"records[{i}].email {rec['email']!r} is not an email address (use null)")
+        if rec.get("retention_until") is not None and not ISO_DATE_RE.match(str(rec["retention_until"])):
+            problems.append(f"records[{i}].retention_until must be YYYY-MM-DD or null")
+        if rec.get("observed_at") is not None and not ISO_TS_RE.match(str(rec["observed_at"])):
+            problems.append(f"records[{i}].observed_at must be an ISO-8601 timestamp or null")
+    return "; ".join(problems[:5]) if problems else None
 
 
 # ------------------------------------------------------------------------- deterministic PDF fallback
@@ -132,12 +167,19 @@ def blank(reference: str, related: list[str], **values) -> dict:
 def extract_file(ev: EvidenceFile, cache: Path, llm=None) -> dict | None:
     from ..evidence.multimodal import file_sha256
 
+    from .client import LLMRejected
+
+    result = None
     if llm is not None and llm.available:
-        result = extract_with_llm(ev, llm)
-    elif ev.path.suffix.lower() == ".pdf":
+        try:
+            result = extract_with_llm(ev, llm)
+        except LLMRejected as exc:
+            runlog.event("vision_fallback", f"{ev.file_id}: no valid extraction ({exc}); "
+                         + ("offline PDF parser" if ev.path.suffix.lower() == ".pdf" else "keeping previous cache"))
+    if result is None:
+        if ev.path.suffix.lower() != ".pdf":
+            return None
         result = extract_pdf_offline(ev)
-    else:
-        return None
     result["source_sha256"] = file_sha256(ev)
     cache.parent.mkdir(parents=True, exist_ok=True)
     cache.write_text(json.dumps(result, indent=2, sort_keys=True, ensure_ascii=False), encoding="utf-8")

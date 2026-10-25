@@ -871,3 +871,72 @@ branch=main
 repo_root=/home/stanislaw/hackerrank-orchestrate-october26
 worktree=main
 parent_agent=none
+
+## [2026-10-25T13:02:46+01:00] Add post-processing validation, retries and fallbacks
+
+User Prompt (verbatim, secrets redacted):
+Ok now:
+Add a post-processing validation layer after the model response:
+- consistency checks between fields (e.g. COMPLETE must not have pending remediation steps,
+  NOT_APPLICABLE must not list exposed records),
+- retry with the validation error fed back to the model, max 2 retries,
+- handle refusals and API errors so one failing request never breaks output.csv,
+- log every failure and fallback.
+Rerun eval and confirm no regression.
+
+Agent Response Summary:
+Added agent/validation.py (per-case contract and cross-field checks plus deterministic repair), agent/runlog.py (failure/fallback event log to stderr and run_events.jsonl), and a retry loop in LLMClient: refusals, API errors and answers failing validation are retried up to 2 times with the validation error fed back, then intent falls back to the heuristic (uncached) and vision to the offline PDF parser or previous cache. Auditor.run wraps each case (crash -> logged fallback row; invalid answer -> logged repair), evidence parsing is guarded per file, and validate_output.py reuses the same checks. 14 new unit tests with a fake SDK pass. Offline eval unchanged (samples 100% status, 99.0% step F1, 90.6% sequence; custom 100%); full run identical to the previous run, with one logged warning (case_126 finding without evidence).
+
+Actions:
+* Created code/agent/validation.py, code/agent/runlog.py, code/tests/test_validation.py
+* Edited code/agent/audit.py, code/agent/evidence/index.py, code/agent/llm/{client,intent,vision}.py, code/evaluation/validate_output.py, code/main.py
+* Ran unit tests, offline full run, evaluation/main.py --offline, validate_output.py
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none
+
+## [2026-10-25T13:10:00+01:00] Confirm unit test output and explain rerun commands
+
+User Prompt (verbatim, secrets redacted):
+[pasted output of `uv run python -m unittest discover -s code/tests`: 14 tests OK with WARNING log lines]
+This is the output. Is everythong ok? How to rerun eval and whole test now?
+
+Agent Response Summary:
+Confirmed all 14 tests pass and that the WARNING lines are expected: each test deliberately triggers a crash, refusal, invalid answer or API error and the run log records the retry/fallback. Gave the commands to rerun unit tests, the offline sample/custom evaluation, the full 518-case run and output validation, with expected results. No code changed.
+
+Actions:
+* none (explanation only)
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none
+
+## [2026-10-25T13:20:00+01:00] Explain case_126 validator warning
+
+User Prompt (verbatim, secrets redacted):
+stanislaw@DESKTOP-HFVGJ95:~/hackerrank-orchestrate-october26$ uv run code/evaluation/validate_output.py
+case_126: finding without evidence (warning)
+0 errors, 1 warnings
+
+Agent Response Summary:
+Confirmed the output is valid (0 errors) and investigated the one warning. case_126 reports account_8819 as remaining based on evidence_12, an observation dated 2026-08-11 in a file captured 2026-08-19 (after audit_at 2026-08-17), so it cannot be cited. The newer evidence_87 inventory (captured 2026-08-17T09:42:50Z, scope includes account_service) does not list account_8819, which suggests the account was absent at audit time and the case is likely COMPLETE, not INCOMPLETE. No code changed; offered a general fix (a newer citable complete listing that omits a resource overrides an older observation) to be tested against the samples first.
+
+Actions:
+* uv run code/main.py --offline --explain case_126; inspected dataset/evidence_files.csv and the evidence_87 SQL snapshot
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none

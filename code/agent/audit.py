@@ -2,17 +2,20 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 
+from . import runlog
 from .evidence.index import EvidenceIndex, citable
 from .evidence.model import Observation
 from .identity import IdentityResolver, Person
 from .llm.client import LLMClient
-from .llm.intent import IntentClassifier
+from .llm.intent import IntentClassifier, heuristic
 from .llm.usage import UsageMonitor
 from .loaders import Request, discover_request_files, load_requests
 from .planner import Assessment, build_steps
 from .policy import Policy
+from .validation import repair_case, validate_case
 from .workflow import WorkflowLinker
 
 
@@ -52,6 +55,39 @@ class Auditor:
             == "USER_PROFILE"
 
     # ------------------------------------------------------------------------------------------ case
+    def run(self, req: Request) -> CaseResult:
+        """audit() guarded by post-processing validation: a crash or an invalid answer for one request is logged
+        and replaced by a repaired or fallback row, so it can never break output.csv."""
+        try:
+            result = self.audit(req)
+        except Exception as exc:
+            runlog.event("case_error", f"{type(exc).__name__}: {exc}", req.case_id)
+            return self.fallback(req)
+        captured = {file_id: ev.captured_at for file_id, ev in self.index.files.items()}
+        errors, warnings = validate_case(result.status, result.steps, req.audit_at, captured)
+        for w in warnings:
+            runlog.event("case_warning", w, req.case_id, level=logging.INFO)
+        if not errors:
+            return result
+        status, steps, fixes = repair_case(result.status, result.steps, req.audit_at, captured)
+        remaining, _ = validate_case(status, steps, req.audit_at, captured)
+        runlog.event("case_repaired" if not remaining else "case_invalid", "; ".join(errors), req.case_id,
+                     fixes=fixes, remaining=remaining)
+        result.status, result.steps = status, steps
+        return result
+
+    def fallback(self, req: Request) -> CaseResult:
+        """Row for a request whose audit crashed: NOT_APPLICABLE if it is not a deletion request; otherwise
+        INCOMPLETE with no steps, i.e. "deletion could not be verified" rather than an unproven COMPLETE."""
+        try:
+            intent = self.intent.classify(req.request_text, req.case_id, count=False)
+        except Exception as exc:
+            runlog.event("intent_fallback", f"classifier crashed ({type(exc).__name__}: {exc})", req.case_id)
+            intent = {"label": heuristic(req.request_text), "source": "heuristic_after_failure"}
+        status = "INCOMPLETE" if intent["label"] == "DELETION" else "NOT_APPLICABLE"
+        runlog.event("case_fallback", f"wrote {status} with no steps", req.case_id)
+        return CaseResult(req.case_id, status, [], intent)
+
     def audit(self, req: Request) -> CaseResult:
         intent = self.intent.classify(req.request_text, req.case_id)
         if intent["label"] != "DELETION":
