@@ -960,3 +960,35 @@ branch=main
 repo_root=/home/stanislaw/hackerrank-orchestrate-october26
 worktree=main
 parent_agent=none
+
+## [2026-10-25T14:10:00+01:00] Code-quality refactor (types, enums, config, logging, ruff, mypy)
+
+User Prompt (verbatim, secrets redacted):
+Refactor for code quality without changing prompts or logic:
+- add type hints to all function arguments and return values,
+- add short docstrings to public functions and classes,
+- replace loose dicts with dataclasses or Pydantic models where data has a fixed shape,
+- replace status strings with Enums,
+- move constants and config (model name, paths, temperature, retry limits) into one config module,
+- use logging instead of print, pathlib instead of string paths,
+- clear module boundaries (data loading, evidence gathering, reasoning, validation, output),
+- remove dead code and leftover experiments.
+Then run ruff (lint + format) and mypy, and fix what they report.
+Finally rerun the agent and the eval, and compare with the previous results.
+Any difference must be explained.
+
+Agent Response Summary:
+Added agent/schema.py (StrEnums for statuses, phases, operations, states, rule actions, verdicts, intent labels and a Step dataclass) and agent/output.py; moved all paths, dataset file names, model names, retry limits, timeouts and workflow windows into agent/config.py; replaced loose dicts with dataclasses/TypedDicts (identity/audit/rule rows, IntentResult, usage summary, run events, extraction records, evaluation metrics); switched diagnostics to logging; removed dead code (EVIDENCE_DIR, RESOURCE_RE, Assessment.reason, Policy.rule_id, Person.name/audit_ids). Added ruff + mypy (strict defs) config and dev group; both report no issues; 14 unit tests pass. Byte-level comparison against a pre-refactor baseline: full 518-case output, sample and custom predictions, metrics, event logs, usage JSON and usage report identical; prompts/schemas verified identical; only difference is the reformatted "intent :" line of --explain. Also fixed the "wwww." typo in the README_2 submission URL and made eval runs write their own *.events.jsonl instead of overwriting run_events.jsonl.
+
+Actions:
+* Created code/agent/schema.py, code/agent/output.py, code/agent/__init__.py docstring
+* Edited all modules under code/agent, code/main.py, code/evaluation/*.py, code/tests/test_validation.py, pyproject.toml, uv.lock, .gitignore, README_2.md
+* uv run ruff check/format, uv run mypy, unittest, offline full/sample/custom runs, evaluation, byte-level diffs vs baseline
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none

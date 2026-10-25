@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 from . import runlog
@@ -10,28 +11,36 @@ from .evidence.index import EvidenceIndex, citable
 from .evidence.model import Observation
 from .identity import IdentityResolver, Person
 from .llm.client import LLMClient
-from .llm.intent import IntentClassifier, heuristic
+from .llm.intent import IntentClassifier, IntentResult, heuristic
 from .llm.usage import UsageMonitor
 from .loaders import Request, discover_request_files, load_requests
 from .planner import Assessment, build_steps
-from .policy import Policy
+from .policy import BACKUP_CATEGORY, FLOW_CATEGORY, PROFILE_CATEGORY, Policy
+from .schema import DeletionStatus, RuleAction, Step, StepState, Verdict
 from .validation import repair_case, validate_case
 from .workflow import WorkflowLinker
+
+Supports = Callable[[Observation], bool]  # does an observation support the assessed conclusion?
 
 
 @dataclass
 class CaseResult:
+    """The answer for one request, plus what the audit found (for --explain)."""
+
     case_id: str
-    status: str
-    steps: list[dict]
-    intent: dict = field(default_factory=dict)
+    status: DeletionStatus
+    steps: list[Step]
+    intent: IntentResult | None = None
     user_id: str | None = None
     assessments: list[Assessment] = field(default_factory=list)
 
 
 class Auditor:
-    def __init__(self, requests: list[Request], offline: bool = False, fresh: bool = False,
-                 monitor: UsageMonitor | None = None) -> None:
+    """Audits requests against all participant data; build once, then call `run` per request."""
+
+    def __init__(
+        self, requests: list[Request], offline: bool = False, fresh: bool = False, monitor: UsageMonitor | None = None
+    ) -> None:
         self.monitor = monitor or UsageMonitor()
         self.llm = LLMClient(self.monitor)
         self.intent = IntentClassifier(self.llm, offline=offline, fresh=fresh)
@@ -42,17 +51,23 @@ class Auditor:
         # attribution does not depend on the subset run.
         known = {r.case_id: r for path in discover_request_files() for r in load_requests(path)}
         known.update({r.case_id: r for r in requests})
-        self.workflow = WorkflowLinker(sorted(known.values(), key=lambda r: r.case_id), self.identities, self.index,
-                                       is_deletion=self.is_deletion, is_profile=self.is_profile)
+        self.workflow = WorkflowLinker(
+            sorted(known.values(), key=lambda r: r.case_id),
+            self.identities,
+            self.index,
+            is_deletion=self.is_deletion,
+            is_profile=self.is_profile,
+        )
 
     def is_deletion(self, req: Request) -> bool:
-        return self.intent.classify(req.request_text, req.case_id, count=False)["label"] == "DELETION"
+        """Whether the request authorizes deletion (not counted as part of the audited run)."""
+        return self.intent.classify(req.request_text, req.case_id, count=False).is_deletion
 
     def is_profile(self, resource_id: str) -> bool:
         """The primary user profile, as categorized by the policy (not by an id prefix)."""
         system_id = self.index.system_of(resource_id)
-        return self.policy.category_of(resource_id, system_id, self.index.by_resource.get(resource_id, [])) \
-            == "USER_PROFILE"
+        category = self.policy.category_of(resource_id, system_id, self.index.by_resource.get(resource_id, []))
+        return category == PROFILE_CATEGORY
 
     # ------------------------------------------------------------------------------------------ case
     def run(self, req: Request) -> CaseResult:
@@ -61,18 +76,19 @@ class Auditor:
         try:
             result = self.audit(req)
         except Exception as exc:
-            runlog.event("case_error", f"{type(exc).__name__}: {exc}", req.case_id)
+            runlog.event(runlog.EventKind.CASE_ERROR, f"{type(exc).__name__}: {exc}", req.case_id)
             return self.fallback(req)
         captured = {file_id: ev.captured_at for file_id, ev in self.index.files.items()}
-        errors, warnings = validate_case(result.status, result.steps, req.audit_at, captured)
+        wire = [s.to_dict() for s in result.steps]
+        errors, warnings = validate_case(result.status, wire, req.audit_at, captured)
         for w in warnings:
-            runlog.event("case_warning", w, req.case_id, level=logging.INFO)
+            runlog.event(runlog.EventKind.CASE_WARNING, w, req.case_id, level=logging.INFO)
         if not errors:
             return result
-        status, steps, fixes = repair_case(result.status, result.steps, req.audit_at, captured)
-        remaining, _ = validate_case(status, steps, req.audit_at, captured)
-        runlog.event("case_repaired" if not remaining else "case_invalid", "; ".join(errors), req.case_id,
-                     fixes=fixes, remaining=remaining)
+        status, steps, fixes = repair_case(result.status, wire, req.audit_at, captured)
+        remaining, _ = validate_case(status, [s.to_dict() for s in steps], req.audit_at, captured)
+        kind = runlog.EventKind.CASE_INVALID if remaining else runlog.EventKind.CASE_REPAIRED
+        runlog.event(kind, "; ".join(errors), req.case_id, fixes=fixes, remaining=remaining)
         result.status, result.steps = status, steps
         return result
 
@@ -82,29 +98,33 @@ class Auditor:
         try:
             intent = self.intent.classify(req.request_text, req.case_id, count=False)
         except Exception as exc:
-            runlog.event("intent_fallback", f"classifier crashed ({type(exc).__name__}: {exc})", req.case_id)
-            intent = {"label": heuristic(req.request_text), "source": "heuristic_after_failure"}
-        status = "INCOMPLETE" if intent["label"] == "DELETION" else "NOT_APPLICABLE"
-        runlog.event("case_fallback", f"wrote {status} with no steps", req.case_id)
+            runlog.event(
+                runlog.EventKind.INTENT_FALLBACK, f"classifier crashed ({type(exc).__name__}: {exc})", req.case_id
+            )
+            intent = IntentResult(heuristic(req.request_text), None, "heuristic_after_failure")
+        status = DeletionStatus.INCOMPLETE if intent.is_deletion else DeletionStatus.NOT_APPLICABLE
+        runlog.event(runlog.EventKind.CASE_FALLBACK, f"wrote {status} with no steps", req.case_id)
         return CaseResult(req.case_id, status, [], intent)
 
     def audit(self, req: Request) -> CaseResult:
+        """The unguarded audit of one request."""
         intent = self.intent.classify(req.request_text, req.case_id)
-        if intent["label"] != "DELETION":
-            return CaseResult(req.case_id, "NOT_APPLICABLE", [], intent)
+        if not intent.is_deletion:
+            return CaseResult(req.case_id, DeletionStatus.NOT_APPLICABLE, [], intent)
         person = self.identities.resolve(req.email, req.audit_at)
         if person is None:  # nobody to investigate: nothing provable remains
-            return CaseResult(req.case_id, "COMPLETE", [], intent)
+            return CaseResult(req.case_id, DeletionStatus.COMPLETE, [], intent)
         workflow = self.workflow.resources_for(req.case_id)
         relevant = self.relevant_resources(person, req)
         resources = relevant | {
-            r for r in workflow if self.is_profile(r) or self.index.observations_for(r, req.audit_at)}
+            r for r in workflow if self.is_profile(r) or self.index.observations_for(r, req.audit_at)
+        }
         if not any(self.is_profile(r) for r in resources):
             # The worker never named the profile. Seeded accounts use the same number as the stable user id.
             number = person.user_id.removeprefix("user_")
             if number.isdigit():
                 synthetic = f"account_{int(number):03d}"
-                owners = self.workflow.owners.get(synthetic, ())
+                owners = self.workflow.owners.get(synthetic, set())
                 if not owners or owners == {person.user_id}:
                     resources.add(synthetic)
         assessments = [a for r in sorted(resources) if (a := self.assess(r, req))]
@@ -122,96 +142,170 @@ class Auditor:
 
     # -------------------------------------------------------------------------------------- resource
     def assess(self, resource_id: str, req: Request) -> Assessment | None:
+        """State of one resource at audit time against its policy treatment (None: nothing to report)."""
         observations = self.index.observations_for(resource_id, req.audit_at)
         system_id = self.index.system_of(resource_id)
         if not observations:
             # Only the worker activity names this record; the newest complete listing shows whether it is gone.
             category = self.policy.category_of(resource_id, system_id, [])
-            if self.policy.action(category) != "DELETE":
+            if self.policy.action(category) is not RuleAction.DELETE:
                 return None
             proof = self.index.absence_proof(resource_id, system_id, req.audit_at)
-            return Assessment(system_id, resource_id, category, "OK", "ABSENT", proof.file_id if proof else "")
+            return Assessment(
+                system_id, resource_id, category, Verdict.OK, StepState.ABSENT, proof.file_id if proof else ""
+            )
         category = self.policy.category_of(resource_id, system_id, observations)
         action = self.policy.action(category)
 
-        if category == "DATA_FLOW":
+        if category == FLOW_CATEGORY:
             latest = latest_where(observations, lambda o: o.flow_enabled() is not None)
             if not latest:
                 return None
             enabled = any(o.flow_enabled() for o in latest)
-            return self.make(system_id, resource_id, category, "ACTIVE_FLOW" if enabled else "OK", "DISABLED",
-                             observations, req, lambda o: o.flow_enabled() == enabled)
+            return self.make(
+                system_id,
+                resource_id,
+                category,
+                Verdict.ACTIVE_FLOW if enabled else Verdict.OK,
+                StepState.DISABLED,
+                observations,
+                req,
+                lambda o: o.flow_enabled() == enabled,
+            )
 
-        if category == "BACKUP_ARCHIVE":
+        if category == BACKUP_CATEGORY:
             latest = latest_where(observations, lambda o: o.restore_allowed() is not None)
             if not latest:
                 return None
             allowed = any(o.restore_allowed() for o in latest)
-            return self.make(system_id, resource_id, category, "RESTORE_RISK" if allowed else "OK", "BLOCKED",
-                             observations, req, lambda o: o.restore_allowed() == allowed)
+            return self.make(
+                system_id,
+                resource_id,
+                category,
+                Verdict.RESTORE_RISK if allowed else Verdict.OK,
+                StepState.BLOCKED,
+                observations,
+                req,
+                lambda o: o.restore_allowed() == allowed,
+            )
 
         latest = latest_where(observations, lambda o: o.exists() is not None)
         if not latest:
             return None
         exists = any(o.exists() for o in latest)
-        if exists and action != "RETAIN":
+        if exists and action is not RuleAction.RETAIN:
             # A newer citable complete listing of the system that omits the record supersedes older sightings.
             # Not for retained records: those may be archived outside the listed system, so omission is no proof.
             proof = self.index.absence_proof(resource_id, system_id, req.audit_at)
             if proof and proof.observed_at > latest[0].observed_at:
                 exists = False
 
-        if action == "RETAIN":
+        if action is RuleAction.RETAIN:
             until = retention_until(observations)
             if until is not None and until < req.audit_at:  # retention lapsed: no longer protected
-                action = "DELETE"
+                action = RuleAction.DELETE
             else:
                 if not exists:
                     return None
-                return self.make(system_id, resource_id, category, "OK", "PRESENT", observations, req,
-                                 lambda o: o.exists() is True)
+                return self.make(
+                    system_id,
+                    resource_id,
+                    category,
+                    Verdict.OK,
+                    StepState.PRESENT,
+                    observations,
+                    req,
+                    lambda o: o.exists() is True,
+                )
 
         if not exists:
-            return self.make(system_id, resource_id, category, "OK", "ABSENT", observations, req,
-                             lambda o: o.exists() is False)
-        if action == "DELETE":
-            return self.make(system_id, resource_id, category, "REMAINING", "ABSENT", observations, req,
-                             lambda o: o.exists() is True)
+            return self.make(
+                system_id,
+                resource_id,
+                category,
+                Verdict.OK,
+                StepState.ABSENT,
+                observations,
+                req,
+                lambda o: o.exists() is False,
+            )
+        if action is RuleAction.DELETE:
+            return self.make(
+                system_id,
+                resource_id,
+                category,
+                Verdict.REMAINING,
+                StepState.ABSENT,
+                observations,
+                req,
+                lambda o: o.exists() is True,
+            )
 
         present = [o for o in latest if o.exists()]
         exposed = any(self.exposure(o, category) for o in present)
-        if action == "ANONYMIZE":
-            return self.make(system_id, resource_id, category, "EXPOSED_ANONYMIZE" if exposed else "OK",
-                             "ANONYMIZED", observations, req, lambda o: o.exists() is True and
-                             bool(self.exposure(o, category)) == exposed)
-        return self.make(system_id, resource_id, category, "EXPOSED_REDACT" if exposed else "OK", "REDACTED",
-                         observations, req,
-                         lambda o: o.exists() is True and bool(self.exposure(o, category)) == exposed)
+
+        def same_exposure(o: Observation) -> bool:
+            return o.exists() is True and bool(self.exposure(o, category)) == exposed
+
+        if action is RuleAction.ANONYMIZE:
+            return self.make(
+                system_id,
+                resource_id,
+                category,
+                Verdict.EXPOSED_ANONYMIZE if exposed else Verdict.OK,
+                StepState.ANONYMIZED,
+                observations,
+                req,
+                same_exposure,
+            )
+        return self.make(
+            system_id,
+            resource_id,
+            category,
+            Verdict.EXPOSED_REDACT if exposed else Verdict.OK,
+            StepState.REDACTED,
+            observations,
+            req,
+            same_exposure,
+        )
 
     def exposure(self, o: Observation, category: str) -> list[str]:
         """Identifiers the policy forbids for this category that are still visible in the observation."""
         fields = o.exposed_fields()
-        if o.attrs.get("detector") == "direct_identifier" or \
-                str(o.attrs.get("direct_identifiers", "0")) not in {"0", "None"}:
+        if o.attrs.get("detector") == "direct_identifier" or str(o.attrs.get("direct_identifiers", "0")) not in {
+            "0",
+            "None",
+        }:
             fields = fields + ["scan"]
-        if self.policy.action(category) == "ANONYMIZE" and o.user_ref():  # anonymized means unlinked
+        if self.policy.action(category) is RuleAction.ANONYMIZE and o.user_ref():  # anonymized means unlinked
             fields = fields + ["user_ref"]
         return fields
 
-    def make(self, system_id: str, resource_id: str, category: str, verdict: str, final_state: str,
-             observations: list[Observation], req: Request, supports) -> Assessment:
+    def make(
+        self,
+        system_id: str,
+        resource_id: str,
+        category: str,
+        verdict: Verdict,
+        final_state: StepState,
+        observations: list[Observation],
+        req: Request,
+        supports: Supports,
+    ) -> Assessment:
+        """Assessment citing the newest citable observation that supports it (or an absence proof)."""
         evidence = ""
         for o in reversed(observations):  # newest citable observation that supports the conclusion
             if citable(o, req.audit_at) and supports(o):
                 evidence = o.file_id
                 break
-        if not evidence and verdict == "OK" and final_state == "ABSENT":
+        if not evidence and verdict is Verdict.OK and final_state is StepState.ABSENT:
             proof = self.index.absence_proof(resource_id, system_id, req.audit_at)
             evidence = proof.file_id if proof else ""
         return Assessment(system_id, resource_id, category, verdict, final_state, evidence)
 
 
-def latest_where(observations: list[Observation], predicate) -> list[Observation]:
+def latest_where(observations: list[Observation], predicate: Supports) -> list[Observation]:
+    """The newest observations (all sharing the latest time) for which `predicate` holds."""
     matching = [o for o in observations if predicate(o)]
     if not matching:
         return []
@@ -220,10 +314,9 @@ def latest_where(observations: list[Observation], predicate) -> list[Observation
 
 
 def retention_until(observations: list[Observation]) -> str | None:
+    """The newest retention end date stated for the record, if any."""
     for o in reversed(observations):
         value = o.attrs.get("retention_until") or o.attrs.get("retained_until") or o.attrs.get("retain_until")
         if value:
             return str(value)
     return None
-
-

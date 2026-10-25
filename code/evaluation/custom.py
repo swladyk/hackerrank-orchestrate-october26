@@ -9,17 +9,20 @@ Each case isolates one behaviour (see custom_cases/README.md):
 
 from __future__ import annotations
 
-import importlib.util
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 
-def run_custom_cases(custom_dir: Path, score, read_rows, offline: bool = False) -> dict:
-    """`score`/`read_rows` come from evaluation/main.py so both reports use the same metrics."""
-    code_dir = Path(__file__).resolve().parent.parent
-    spec = importlib.util.spec_from_file_location("agent_cli", code_dir / "main.py")
-    agent_cli = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(agent_cli)
+def run_custom_cases(
+    custom_dir: Path,
+    score: Callable[[Any, Any], Any],
+    read_rows: Callable[[Path], Any],
+    run_agent: Callable[[Path, Path, bool], None],
+    offline: bool = False,
+) -> Any:
+    """Run the agent on the custom requests and score them. `score`, `read_rows` and `run_agent` come from
+    evaluation/main.py so both reports use the same pipeline and metrics."""
     pred = custom_dir / "predictions.csv"
-    agent_cli.main(["--requests", str(custom_dir / "requests.csv"), "--output", str(pred),
-                    "--usage-out", str(custom_dir / "predictions.usage.json")] + (["--offline"] if offline else []))
+    run_agent(custom_dir / "requests.csv", pred, offline)
     return score(read_rows(pred), read_rows(custom_dir / "expected_output.csv"))

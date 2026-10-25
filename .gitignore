@@ -9,3 +9,5 @@ code/evaluation/*.usage.json
 code/evaluation/custom_cases/*.usage.json
 code/evaluation/usage_run_subset.json
 .claude/worktrees/
+code/evaluation/*.events.jsonl
+code/evaluation/custom_cases/*.events.jsonl

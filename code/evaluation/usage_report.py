@@ -8,20 +8,29 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import sys
 from pathlib import Path
+from typing import Any
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent))
+
+from agent import runlog  # noqa: E402
+from agent.config import REPO_ROOT, USAGE_OUT  # noqa: E402
+
+log = logging.getLogger("agent.usage_report")
 
 
-def render(data: dict, source: Path) -> str:
+def render(data: dict[str, Any], source: Path) -> str:
+    """Markdown report from the usage JSON (as saved by UsageMonitor.save)."""
     s = data["summary"]
     calls = data["calls"]
     lines = [
         "# Token Usage and Cost Report",
         "",
         "Final full-dataset run that produced `output.csv` (all 518 requests in `dataset/deletion_requests.csv`).",
-        f"Generated from `{source.relative_to(HERE.parent.parent)}` by `code/evaluation/usage_report.py`.",
+        f"Generated from `{source.relative_to(REPO_ROOT)}` by `code/evaluation/usage_report.py`.",
         "",
         "## Where the model is used",
         "",
@@ -55,17 +64,21 @@ def render(data: dict, source: Path) -> str:
         "|---|---|---|---|---|---|---|---|",
     ]
     for model, m in s["per_model"].items():
-        lines.append(f"| OpenAI | `{model}` | {', '.join(m['purposes'])} | {m['calls']} | {m['input_tokens']:,} | "
-                     f"{m['output_tokens']:,} | {m['total_tokens']:,} | ${m['cost_usd']:.6f} |")
+        lines.append(
+            f"| OpenAI | `{model}` | {', '.join(m['purposes'])} | {m['calls']} | {m['input_tokens']:,} | "
+            f"{m['output_tokens']:,} | {m['total_tokens']:,} | ${m['cost_usd']:.6f} |"
+        )
     if not s["per_model"]:
         lines.append("| OpenAI | `gpt-6-luna` | — | 0 | 0 | 0 | 0 | $0.000000 |")
-    by_purpose: dict[str, list[dict]] = {}
+    by_purpose: dict[str, list[dict[str, Any]]] = {}
     for c in calls:
         by_purpose.setdefault(c["purpose"], []).append(c)
     lines += ["", "## Per purpose", "", "| Purpose | Calls | Input tokens | Output tokens |", "|---|---|---|---|"]
     for purpose, cs in sorted(by_purpose.items()):
-        lines.append(f"| {purpose} | {len(cs)} | {sum(c['input_tokens'] for c in cs):,} | "
-                     f"{sum(c['output_tokens'] for c in cs):,} |")
+        lines.append(
+            f"| {purpose} | {len(cs)} | {sum(c['input_tokens'] for c in cs):,} | "
+            f"{sum(c['output_tokens'] for c in cs):,} |"
+        )
     lines += [
         "",
         "## Pricing used",
@@ -76,7 +89,9 @@ def render(data: dict, source: Path) -> str:
         "|---|---|---|---|",
     ]
     for model, p in s["pricing_usd_per_1m_tokens"].items():
-        lines.append(f"| `{model}` | ${p['input']:.2f} | ${p.get('cached_input', p['input']):.2f} | ${p['output']:.2f} |")
+        lines.append(
+            f"| `{model}` | ${p['input']:.2f} | ${p.get('cached_input', p['input']):.2f} | ${p['output']:.2f} |"
+        )
     lines += [
         "",
         "Notes: averages divide by the number of requests in the run (518), including requests answered from "
@@ -88,13 +103,15 @@ def render(data: dict, source: Path) -> str:
 
 
 def main(argv: list[str]) -> int:
+    """Render usage_report.md from the usage JSON."""
+    runlog.configure_logging()
     parser = argparse.ArgumentParser()
-    parser.add_argument("--usage", type=Path, default=HERE / "usage_run.json")
+    parser.add_argument("--usage", type=Path, default=USAGE_OUT)
     parser.add_argument("--out", type=Path, default=HERE / "usage_report.md")
     args = parser.parse_args(argv)
     data = json.loads(args.usage.read_text(encoding="utf-8"))
     args.out.write_text(render(data, args.usage.resolve()), encoding="utf-8")
-    print(f"wrote {args.out}")
+    log.info("wrote %s", args.out)
     return 0
 
 

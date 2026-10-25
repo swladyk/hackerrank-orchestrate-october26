@@ -17,18 +17,20 @@ sys.path.insert(0, str(CODE_DIR))
 
 from agent.config import DEFAULT_OUTPUT, DEFAULT_REQUESTS  # noqa: E402
 from agent.loaders import case_sort_key, load_manifest, load_requests  # noqa: E402
+from agent.output import OUTPUT_HEADER  # noqa: E402
 from agent.validation import validate_case  # noqa: E402
 
 
 def validate(output: Path, requests_path: Path) -> list[str]:
+    """File-level checks plus the agent's per-case checks; warnings end with "(warning)"."""
     errors: list[str] = []
     requests = {r.case_id: r for r in load_requests(requests_path)}
     captured = {ev.file_id: ev.captured_at for ev in load_manifest()}
-    with open(output, encoding="utf-8", newline="") as handle:
+    with output.open(encoding="utf-8", newline="") as handle:
         reader = csv.reader(handle)
         header = next(reader)
         rows = list(reader)
-    if header != ["case_id", "deletion_status", "steps_json"]:
+    if tuple(header) != OUTPUT_HEADER:
         errors.append(f"bad header {header}")
     ids = [r[0] for r in rows]
     if len(rows) != len(requests):
@@ -50,6 +52,7 @@ def validate(output: Path, requests_path: Path) -> list[str]:
 
 
 def main(argv: list[str]) -> int:
+    """Print every problem; exit 1 if there are hard errors."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--requests", type=Path, default=DEFAULT_REQUESTS)

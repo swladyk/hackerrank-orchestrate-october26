@@ -1,7 +1,7 @@
 """Thin OpenAI wrapper: one client, every call's usage goes to the UsageMonitor.
 
 Every model answer is validated before it is used. A refusal, an API error or an answer that fails validation is
-retried (at most MAX_RETRIES times) with the validation error fed back to the model; if it still fails,
+retried (at most LLM_MAX_RETRIES times) with the validation error fed back to the model; if it still fails,
 LLMRejected is raised and the caller falls back to its deterministic path. Every retry and failure is logged.
 """
 
@@ -9,18 +9,23 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
+from typing import Any, TypeVar
 
 from .. import runlog
-from ..config import OPENAI_API_KEY
+from ..config import LLM_MAX_RETRIES, OPENAI_API_KEY, OPENAI_SDK_MAX_RETRIES, OPENAI_TIMEOUT_S
 from .usage import UsageMonitor
 
-MAX_RETRIES = 2
-FEEDBACK = ("Your previous answer was rejected by an automatic validator: {error}. "
-            "Answer again, following the instructions and output format exactly.")
+T = TypeVar("T")
+Check = Callable[[T], str | None]  # None = valid, otherwise the error to feed back
+
+FEEDBACK = (
+    "Your previous answer was rejected by an automatic validator: {error}. "
+    "Answer again, following the instructions and output format exactly."
+)
 
 
 class LLMUnavailable(RuntimeError):
-    pass
+    """No API key is configured."""
 
 
 class LLMRejected(RuntimeError):
@@ -28,30 +33,33 @@ class LLMRejected(RuntimeError):
 
 
 class LLMClient:
+    """The OpenAI SDK client plus validated, retried calls with usage accounting."""
+
     def __init__(self, monitor: UsageMonitor) -> None:
         self.monitor = monitor
-        self._client = None
+        self._client: Any = None
 
     @property
     def available(self) -> bool:
+        """Whether an API key is configured."""
         return bool(OPENAI_API_KEY)
 
-    def client(self):
+    def client(self) -> Any:
+        """The lazily created SDK client."""
         if not self.available:
             raise LLMUnavailable("OPENAI_API_KEY is not set (see README_2.md)")
         if self._client is None:
             from openai import OpenAI
 
-            self._client = OpenAI(api_key=OPENAI_API_KEY, max_retries=3, timeout=120)
+            self._client = OpenAI(api_key=OPENAI_API_KEY, max_retries=OPENAI_SDK_MAX_RETRIES, timeout=OPENAI_TIMEOUT_S)
         return self._client
 
-    def with_retries(self, purpose: str, case_id: str | None, attempt: Callable[[str | None], object],
-                     check: Callable[[object], str | None]):
+    def with_retries(self, purpose: str, case_id: str | None, attempt: Callable[[str | None], T], check: Check[T]) -> T:
         """Run `attempt(feedback)` until `check(result)` returns None. Validation errors and refusals are fed
         back on the next attempt; API errors are retried with the previous feedback."""
         feedback: str | None = None
         error = "no attempt made"
-        for n in range(MAX_RETRIES + 1):
+        for n in range(LLM_MAX_RETRIES + 1):
             try:
                 result = attempt(feedback)
             except LLMUnavailable:
@@ -59,41 +67,72 @@ class LLMClient:
             except Exception as exc:  # network, rate limit, server or SDK error
                 error = f"API error {type(exc).__name__}: {str(exc)[:300]}"
             else:
-                error = check(result)
-                if error is None:
+                problem = check(result)
+                if problem is None:
                     return result
-                feedback = error
-            last = n == MAX_RETRIES
-            runlog.event("llm_failed" if last else "llm_retry", error, case_id, purpose=purpose, attempt=n + 1)
+                error = feedback = problem
+            last = n == LLM_MAX_RETRIES
+            kind = runlog.EventKind.LLM_FAILED if last else runlog.EventKind.LLM_RETRY
+            runlog.event(kind, error, case_id, purpose=purpose, attempt=n + 1)
         raise LLMRejected(error)
 
-    def decide(self, model: str, text: str, questions: list[dict], case_id: str | None,
-               check: Callable[[object], str | None] = lambda response: None):
-        def attempt(feedback: str | None):
-            asked = questions if feedback is None else [
-                {**q, "instructions": q["instructions"] + " " + FEEDBACK.format(error=feedback)} for q in questions]
+    def decide(
+        self,
+        model: str,
+        text: str,
+        questions: list[dict[str, Any]],
+        case_id: str | None,
+        check: Check[Any] = lambda response: None,
+    ) -> Any:
+        """Decisions API call (choice questions), validated by `check`."""
+
+        def attempt(feedback: str | None) -> Any:
+            asked = (
+                questions
+                if feedback is None
+                else [
+                    {**q, "instructions": q["instructions"] + " " + FEEDBACK.format(error=feedback)} for q in questions
+                ]
+            )
             response = self.client().decisions.create(model=model, input=text, questions=asked)
             self.monitor.record(getattr(response, "model", None) or model, "intent", case_id, response.usage)
             return response
 
         return self.with_retries("intent", case_id, attempt, check)
 
-    def respond_json(self, model: str, content: list[dict], schema: dict, purpose: str, case_id: str | None,
-                     check: Callable[[dict], str | None] = lambda doc: None) -> dict:
+    def respond_json(
+        self,
+        model: str,
+        content: list[dict[str, str]],
+        schema: dict[str, Any],
+        purpose: str,
+        case_id: str | None,
+        check: Check[dict[str, Any]] = lambda doc: None,
+    ) -> dict[str, Any]:
         """Structured JSON answer, parsed. Refusals and unparsable output count as validation failures."""
-        def attempt(feedback: str | None):
-            sent = content if feedback is None else content + [
-                {"type": "input_text", "text": FEEDBACK.format(error=feedback)}]
+
+        def attempt(feedback: str | None) -> Any:
+            sent = (
+                content
+                if feedback is None
+                else content + [{"type": "input_text", "text": FEEDBACK.format(error=feedback)}]
+            )
             response = self.client().responses.create(
                 model=model,
                 input=[{"role": "user", "content": sent}],
-                text={"format": {"type": "json_schema", "name": schema["name"], "schema": schema["schema"],
-                                 "strict": True}},
+                text={
+                    "format": {
+                        "type": "json_schema",
+                        "name": schema["name"],
+                        "schema": schema["schema"],
+                        "strict": True,
+                    }
+                },
             )
             self.monitor.record(model, purpose, case_id, response.usage)
             return response
 
-        def parse(response) -> tuple[dict | None, str | None]:
+        def parse(response: Any) -> tuple[dict[str, Any] | None, str | None]:
             refusal = find_refusal(response)
             if refusal is not None:
                 return None, f"the model refused ({refusal[:200]})"
@@ -106,10 +145,13 @@ class LLMClient:
             return doc, check(doc)
 
         response = self.with_retries(purpose, case_id, attempt, lambda r: parse(r)[1])
-        return parse(response)[0]
+        doc, _ = parse(response)
+        if doc is None:  # unreachable: with_retries only returns responses that parsed and validated
+            raise LLMRejected("validated response did not parse")
+        return doc
 
 
-def find_refusal(response) -> str | None:
+def find_refusal(response: Any) -> str | None:
     """Text of a refusal content part in a Responses API answer, if the model refused."""
     for item in getattr(response, "output", None) or []:
         for part in getattr(item, "content", None) or []:

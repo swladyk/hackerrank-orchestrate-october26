@@ -10,17 +10,35 @@ from collections import defaultdict
 
 from ..identity import identifier_keys
 from ..loaders import EvidenceFile
-from .model import Observation, canonical_attrs
+from .model import Attrs, Observation, canonical_attrs
 
 TS_RE = re.compile(r"^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)")
 SYSLOG_RE = re.compile(r"^(\S+) <\d+>\d+ (\S+) (\S+) (\S+) \S+ \S+ (.*)$")
-LOOKUP_FIELDS = ("lookup_key", "match_key", "scan_key", "correlation_key", "matched_value", "lookup_value",
-                 "subject_selector", "selector", "query", "subject_ref")
+LOOKUP_FIELDS = (
+    "lookup_key",
+    "match_key",
+    "scan_key",
+    "correlation_key",
+    "matched_value",
+    "lookup_value",
+    "subject_selector",
+    "selector",
+    "query",
+    "subject_ref",
+)
 FREE_TEXT_FIELDS = ("message_text", "message_excerpt", "details", "note", "notes")
 
 
-def obs(ev: EvidenceFile, observed_at: str | None, resource_id: str, raw: dict, source: str,
-        system_id: str | None = None, links: set[str] | None = None) -> Observation:
+def obs(
+    ev: EvidenceFile,
+    observed_at: str | None,
+    resource_id: str,
+    raw: Attrs,
+    source: str,
+    system_id: str | None = None,
+    links: set[str] | None = None,
+) -> Observation:
+    """Build an Observation from a raw record: canonical field names, free text split off, lookup links."""
     attrs = canonical_attrs(flatten(raw))
     text = " ".join(str(attrs.pop(f)) for f in FREE_TEXT_FIELDS if attrs.get(f))
     keys = set(links or ())
@@ -40,9 +58,9 @@ def obs(ev: EvidenceFile, observed_at: str | None, resource_id: str, raw: dict, 
     )
 
 
-def flatten(raw: dict, prefix: str = "") -> dict:
+def flatten(raw: Attrs, prefix: str = "") -> Attrs:
     """Flatten nested dicts (search `document`, `profile`, `hits`) into one level; keep lists as JSON text."""
-    out: dict = {}
+    out: Attrs = {}
     for key, value in raw.items():
         if isinstance(value, dict):
             out.update(flatten(value, ""))
@@ -55,6 +73,7 @@ def flatten(raw: dict, prefix: str = "") -> dict:
 
 # ---------------------------------------------------------------------------------------------- SQL
 def parse_sql(ev: EvidenceFile) -> list[Observation]:
+    """Rows of every table of a SQLite-compatible dump, plus listings for the systems it fully enumerates."""
     conn = sqlite3.connect(":memory:")
     conn.executescript(ev.path.read_text(encoding="utf-8"))
     conn.row_factory = sqlite3.Row
@@ -70,7 +89,10 @@ def parse_sql(ev: EvidenceFile) -> list[Observation]:
             data = dict(row)
             system = data.pop("origin_system", None)
             if "record_json" in data:
-                data = {**json.loads(data.pop("record_json")), **{k: v for k, v in data.items() if k != "collection_name"}}
+                data = {
+                    **json.loads(data.pop("record_json")),
+                    **{k: v for k, v in data.items() if k != "collection_name"},
+                }
             resource_id = data["resource_id"]
             data["_row"] = True
             data["_table"] = table
@@ -96,7 +118,8 @@ def coverage(ev: EvidenceFile, at: str, system: str | None, resource_ids: set[st
 LEDGER_KEYS = {"system", "resource_id", "record_type", "result"}
 
 
-def ledger_obs(ev: EvidenceFile, rec: dict, source: str, default_at: str | None = None) -> Observation:
+def ledger_obs(ev: EvidenceFile, rec: Attrs, source: str, default_at: str | None = None) -> Observation:
+    """A ledger entry (system, resource_id, record_type, result) naming the subject it concerns."""
     data = dict(rec)
     at = data.pop("recorded_at", None) or default_at
     system = data.pop("system", None)
@@ -105,20 +128,30 @@ def ledger_obs(ev: EvidenceFile, rec: dict, source: str, default_at: str | None 
 
 
 def parse_json(ev: EvidenceFile) -> list[Observation]:
+    """Snapshot bundles, per-service exports and record ledgers (dispatch by document shape)."""
     doc = json.loads(ev.path.read_text(encoding="utf-8"))
     out: list[Observation] = []
     if "snapshots" in doc:
         for snap in doc["snapshots"]:
             if snap.get("data_store") and not any(LEDGER_KEYS <= r.keys() for r in snap["records"]):
-                out.append(coverage(ev, snap["captured_at"], snap["data_store"],
-                                    {r["resource_id"] for r in snap["records"]}))
+                out.append(
+                    coverage(ev, snap["captured_at"], snap["data_store"], {r["resource_id"] for r in snap["records"]})
+                )
             for rec in snap["records"]:
                 if LEDGER_KEYS <= rec.keys():
                     out.append(ledger_obs(ev, rec, f"bundle:{snap['collection']}", snap["captured_at"]))
                 else:
                     data = {**rec, "_row": True, "_collection": snap["collection"]}
-                    out.append(obs(ev, snap["captured_at"], rec["resource_id"], data,
-                                   f"bundle:{snap['collection']}", snap["data_store"]))
+                    out.append(
+                        obs(
+                            ev,
+                            snap["captured_at"],
+                            rec["resource_id"],
+                            data,
+                            f"bundle:{snap['collection']}",
+                            snap["data_store"],
+                        )
+                    )
     elif "service_exports" in doc:
         for system, groups in doc["service_exports"].items():
             for group, items in groups.items():
@@ -144,13 +177,22 @@ def parse_json(ev: EvidenceFile) -> list[Observation]:
                 out.append(ledger_obs(ev, rec, f"ledger:{doc.get('origin', '')}", default_at))
             else:
                 data = {**rec, "_row": True}
-                out.append(obs(ev, default_at, rec["resource_id"], data, f"records:{doc.get('collection', '')}",
-                               system if system and system.endswith(("_service", "_platform")) else None))
+                out.append(
+                    obs(
+                        ev,
+                        default_at,
+                        rec["resource_id"],
+                        data,
+                        f"records:{doc.get('collection', '')}",
+                        system if system and system.endswith(("_service", "_platform")) else None,
+                    )
+                )
     return out
 
 
 # --------------------------------------------------------------------------------------------- logs
-def parse_kv(text: str) -> dict:
+def parse_kv(text: str) -> dict[str, str]:
+    """`key=value key="quoted value"` pairs; tokens without `=` are ignored."""
     try:
         parts = shlex.split(text, posix=True)
     except ValueError:
@@ -167,7 +209,7 @@ BRACKET_RE = re.compile(r"^\[(\w+)\] \[([^\]]+)\] \[([^\]]+)\] (\w+): (.*)$")
 PIPE_RE = re.compile(r"^\| (\w+) \| (\S+) \| (\S+) \| (\w+) \| (.*)$")
 
 
-def parse_log_line(line: str) -> dict | None:
+def parse_log_line(line: str) -> Attrs | None:
     """Normalize one log line (kv, syslog, JSON, bracket, pipe, or nested message formats) to a flat dict."""
     m = SYSLOG_RE.match(line)
     if m:
@@ -178,7 +220,7 @@ def parse_log_line(line: str) -> dict | None:
     if not t:
         return None
     ts = t.group(1)
-    rest = line[len(ts):].strip()
+    rest = line[len(ts) :].strip()
     if rest.startswith("{"):
         kv = {k: v for k, v in json.loads(rest).items()}
     elif (b := BRACKET_RE.match(rest)) or (b := PIPE_RE.match(rest)):
@@ -197,6 +239,7 @@ def parse_log_line(line: str) -> dict | None:
 
 
 def parse_log(ev: EvidenceFile) -> list[Observation]:
+    """Log events that name a resource; identifiers seen anywhere in the same trace link to it."""
     events = [kv for line in ev.path.read_text(encoding="utf-8").splitlines() if (kv := parse_log_line(line))]
 
     by_trace: dict[str, set[str]] = defaultdict(set)
@@ -211,8 +254,23 @@ def parse_log(ev: EvidenceFile) -> list[Observation]:
         resource_id = kv.get("resource_id")
         if not resource_id:
             continue
-        data = {k: v for k, v in kv.items() if k not in {"level", "instance", "pod", "region", "seq", "attempt",
-                                                          "duration_ms", "latency_ms", "took_ms", "shard"}}
+        data = {
+            k: v
+            for k, v in kv.items()
+            if k
+            not in {
+                "level",
+                "instance",
+                "pod",
+                "region",
+                "seq",
+                "attempt",
+                "duration_ms",
+                "latency_ms",
+                "took_ms",
+                "shard",
+            }
+        }
         ts = data.pop("_ts")
         system = data.pop("system", None)
         data.pop("service", None)  # emitting process (often a replica/worker name), not the owning system
@@ -230,18 +288,26 @@ HANDOVER_RE = re.compile(r"^-\s*(\S+)\s*\|\s*(\S+)\s*\|\s*(\S+)\s*\|\s*(\S+)\s*\
 
 
 def parse_text(ev: EvidenceFile) -> list[Observation]:
+    """Handover notes: `- time | system | resource | record_type | result | subject` lines."""
     out = []
     for line in ev.path.read_text(encoding="utf-8").splitlines():
         m = HANDOVER_RE.match(line.strip())
         if m:
             at, system, resource_id, record_type, result, subject = m.groups()
-            rec = {"recorded_at": at, "system": system, "resource_id": resource_id, "record_type": record_type,
-                   "result": result, "subject_reference": subject}
+            rec = {
+                "recorded_at": at,
+                "system": system,
+                "resource_id": resource_id,
+                "record_type": record_type,
+                "result": result,
+                "subject_reference": subject,
+            }
             out.append(ledger_obs(ev, rec, "text:handover"))
     return out
 
 
 def parse_file(ev: EvidenceFile) -> list[Observation]:
+    """Observations of one evidence file (PDFs and images are handled by the multimodal extractor)."""
     suffix = ev.path.suffix.lower()
     if suffix == ".sql":
         return parse_sql(ev)
@@ -252,4 +318,3 @@ def parse_file(ev: EvidenceFile) -> list[Observation]:
     if suffix == ".txt":
         return parse_text(ev)
     return []  # PDFs and images are handled by the multimodal extractor
-

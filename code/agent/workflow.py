@@ -18,25 +18,38 @@ jobs could, the record is left out rather than guessed. Non-deletion requests ha
 from __future__ import annotations
 
 from collections import Counter, defaultdict
-from datetime import datetime, timedelta
+from collections.abc import Callable, Iterable
+from datetime import datetime
 
+from .config import ANCHOR_AFTER, ANCHOR_BEFORE, FOLLOW_AFTER
 from .evidence.index import EvidenceIndex
 from .identity import IdentityResolver
 from .loaders import Activity, Request
+from .schema import Operation, ReportedStatus
 
-ANCHOR_BEFORE = timedelta(hours=1.6)
-ANCHOR_AFTER = timedelta(minutes=15)
-FOLLOW_AFTER = timedelta(hours=2.5)
-REMEDIATION_EVENTS = {"ANONYMIZE_RECORD", "REDACT_RECORD", "DELETE_RECORD", "DISABLE_DATA_FLOW", "BLOCK_RESTORE"}
-POLICY_EVENTS = REMEDIATION_EVENTS | {"CHECK_DATA_FLOW", "CHECK_RESTORE_ACCESS"}
-STATUS_RESULT = {"COMPLETE": "SUCCESS", "PARTIALLY_COMPLETE": "PARTIAL", "NOT_STARTED": "FAILED"}
+# activity event types that are remediation operations of the contract
+REMEDIATION_EVENTS: set[str] = {
+    Operation.ANONYMIZE_RECORD,
+    Operation.REDACT_RECORD,
+    Operation.DELETE_RECORD,
+    Operation.DISABLE_DATA_FLOW,
+    Operation.BLOCK_RESTORE,
+}
+POLICY_EVENTS: set[str] = REMEDIATION_EVENTS | {"CHECK_DATA_FLOW", "CHECK_RESTORE_ACCESS"}
+# the workflow's claim -> the result the profile submission must have reported
+STATUS_RESULT: dict[ReportedStatus, str] = {
+    ReportedStatus.COMPLETE: "SUCCESS",
+    ReportedStatus.PARTIALLY_COMPLETE: "PARTIAL",
+    ReportedStatus.NOT_STARTED: "FAILED",
+}
 
 
 def ts(value: str) -> datetime:
+    """Parse a `YYYY-MM-DDTHH:MM:SSZ` timestamp."""
     return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
 
 
-def deletion_worker(activity: list[Activity]) -> str | None:
+def deletion_worker(activity: Iterable[Activity]) -> str | None:
     """The source system that executes remediation operations (the one emitting most of them)."""
     counts = Counter(a.source_system for a in activity if a.event_type in REMEDIATION_EVENTS)
     return counts.most_common(1)[0][0] if counts else None
@@ -48,17 +61,28 @@ def reported_before(a: Activity) -> bool:
 
 
 class WorkflowLinker:
-    def __init__(self, requests: list[Request], identities: IdentityResolver, index: EvidenceIndex,
-                 is_deletion=lambda req: True, is_profile=lambda resource_id: False) -> None:
+    """Which resources the deletion worker touched on behalf of each request (see the module docstring)."""
+
+    def __init__(
+        self,
+        requests: list[Request],
+        identities: IdentityResolver,
+        index: EvidenceIndex,
+        is_deletion: Callable[[Request], bool] = lambda req: True,
+        is_profile: Callable[[str], bool] = lambda resource_id: False,
+    ) -> None:
         self.owners = self._owners(identities, index)
         self.assigned: dict[str, set[str]] = defaultdict(set)
         source = deletion_worker(index.activity)
         worker = [a for a in index.activity if a.source_system == source and a.event_type in POLICY_EVENTS]
-        anchors = sorted((a for a in worker if a.event_type == "DELETE_RECORD" and is_profile(a.resource_id)),
-                         key=lambda a: (a.event_time, a.activity_id))
-        follow = sorted((a for a in worker if not is_profile(a.resource_id)),
-                        key=lambda a: (a.event_time, a.activity_id))
-        users = {}
+        anchors = sorted(
+            (a for a in worker if a.event_type == "DELETE_RECORD" and is_profile(a.resource_id)),
+            key=lambda a: (a.event_time, a.activity_id),
+        )
+        follow = sorted(
+            (a for a in worker if not is_profile(a.resource_id)), key=lambda a: (a.event_time, a.activity_id)
+        )
+        users: dict[str, str] = {}
         self.job_of: dict[str, str] = {}  # case_id -> job key; one person's request reported together = one job
         jobs: dict[str, Request] = {}
         for req in sorted(requests, key=lambda r: r.case_id):
@@ -91,13 +115,19 @@ class WorkflowLinker:
             if req.case_id in anchor_time:
                 continue
             lo, hi = ts(req.reported_at) - ANCHOR_BEFORE, ts(req.reported_at) + ANCHOR_AFTER
-            window = [a for a in follow if lo <= ts(a.event_time) <= hi and a.activity_id not in taken
-                      and not self.owners.get(a.resource_id)]
+            window = [
+                a
+                for a in follow
+                if lo <= ts(a.event_time) <= hi and a.activity_id not in taken and not self.owners.get(a.resource_id)
+            ]
             expected = STATUS_RESULT.get(req.reported_status)
             matching = [a for a in window if a.reported_result == expected]
             pool = matching or window
-            pick = min(pool, key=lambda a: (abs((ts(req.reported_at) - ts(a.event_time)).total_seconds()),
-                                            a.activity_id), default=None)
+            pick = min(
+                pool,
+                key=lambda a: (abs((ts(req.reported_at) - ts(a.event_time)).total_seconds()), a.activity_id),
+                default=None,
+            )
             if pick:
                 taken.add(pick.activity_id)
                 self.assigned[req.case_id].add(pick.resource_id)
@@ -114,8 +144,11 @@ class WorkflowLinker:
         style: dict[str, set[bool]] = defaultdict(set)
         for a in follow:
             for req in ordered:
-                if req.case_id in anchor_time and users[req.case_id] in self.owners.get(a.resource_id, ()) \
-                        and in_window(req, a):
+                if (
+                    req.case_id in anchor_time
+                    and users[req.case_id] in self.owners.get(a.resource_id, ())
+                    and in_window(req, a)
+                ):
                     style[req.case_id].add(reported_before(a))
 
         # Unattributed policy actions go to the first compatible job (FIFO), one action of each kind per job.
@@ -125,8 +158,12 @@ class WorkflowLinker:
                 continue
             kind = (a.event_type, a.target_system)
             for req in ordered:
-                if req.case_id in anchor_time and in_window(req, a) and kind not in kinds[req.case_id] \
-                        and style[req.case_id] <= {reported_before(a)}:
+                if (
+                    req.case_id in anchor_time
+                    and in_window(req, a)
+                    and kind not in kinds[req.case_id]
+                    and style[req.case_id] <= {reported_before(a)}
+                ):
                     taken.add(a.activity_id)
                     kinds[req.case_id].add(kind)
                     self.assigned[req.case_id].add(a.resource_id)
@@ -138,7 +175,8 @@ class WorkflowLinker:
             return own[0] if own else None
         free = [a for a in window if not self.owners.get(a.resource_id)]
         matching = [a for a in free if a.reported_result == expected]
-        return (matching or free or [None])[0]
+        pool = matching or free
+        return pool[0] if pool else None
 
     @staticmethod
     def _owners(identities: IdentityResolver, index: EvidenceIndex) -> dict[str, set[str]]:
@@ -156,6 +194,7 @@ class WorkflowLinker:
         return owners
 
     def resources_for(self, case_id: str) -> set[str]:
+        """Resources attributed to the request's job (shared by requests of one person reported together)."""
         job = self.job_of.get(case_id)
         lead = next((c for c, j in self.job_of.items() if j == job and c in self.assigned), None) if job else None
         return self.assigned.get(lead, set()) if lead else set()

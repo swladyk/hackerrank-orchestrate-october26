@@ -151,29 +151,48 @@ Useful flags: `--verbose` (missing / extra steps per case), `--offline` (no API 
 `--pred <file>` (score an existing predictions file), `--write-report` (refresh the metrics block inside
 `code/evaluation/evaluation_report.md`).
 
+### Tests and code quality
+
+```bash
+uv sync --group dev                              # ruff + mypy
+uv run python -m unittest discover -s code/tests # validation layer: retries, refusals, fallbacks, repairs
+uv run code/evaluation/validate_output.py        # output.csv against the submission contract
+uv run ruff check code && uv run ruff format --check code
+uv run mypy                                      # strict: every function fully annotated
+```
+
+Every run also writes `code/evaluation/run_events.jsonl`: one JSON line per model retry, refusal, API error,
+fallback, repaired or invalid case and validation warning.
+
 ## 7. Package the submission
 
 ```bash
-zip -r code.zip README.md README_2.md pyproject.toml uv.lock code -x "*/__pycache__/*" "*/.venv/*" "*/node_modules/*" "*/.git/*" "*/.DS_Store" "*.usage.json"
+zip -r code.zip README.md README_2.md pyproject.toml uv.lock code -x "*/__pycache__/*" "*/.venv/*" "*/node_modules/*" "*/.git/*" "*/.DS_Store" "*.usage.json" "*.events.jsonl"
 ```
 
 Submit `code.zip`, `output.csv`, and the chat transcript `log.txt` at
-https://wwww.hackerrank.com/contests/hackerrank-orchestrate-october26/challenges/ghost-data-still-exists
+https://www.hackerrank.com/contests/hackerrank-orchestrate-october26/challenges/ghost-data-still-exists
 
 ## 8. Repository map
 
 ```text
 code/
   main.py                 CLI (run / --limit / --cases / --explain / --offline / --fresh)
-  agent/
-    config.py loaders.py  paths, .env, CSV loaders
+  agent/                  layers are documented in agent/__init__.py
+    config.py             every path, model name, retry limit, timeout and tuning window; .env loading
+    schema.py             enums (statuses, phases, operations, states, actions, verdicts) and the Step record
+    loaders.py            dataset CSVs -> typed records (requests, activity, identities, rules, manifest)
     identity.py           current + historical identifiers, normalization, email hashing
     evidence/             parsers (SQL, JSON, logs, text), multimodal records, global index, coverage proofs
     workflow.py           attributes identifier-less records to a request via the deletion worker's job
     policy.py             data category inference + deletion_rules.csv
-    audit.py              per-case audit (intent → identity → discovery → state → policy → plan)
-    planner.py            step construction, canonical ordering, JSON serialization
-    llm/                  OpenAI client, Decisions-API intent, vision extraction, usage monitor, pricing
+    audit.py              per-case audit (intent → identity → discovery → state → policy → plan), guarded run
+    planner.py            step construction and canonical ordering
+    validation.py         contract / cross-field checks and deterministic repair of each case's answer
+    output.py             output.csv serialization
+    runlog.py             failure / fallback event log and logging setup
+    llm/                  OpenAI client (validated retries), Decisions-API intent, vision extraction, usage
   cache/                  intent.json, multimodal/<file_id>.json (deterministic re-runs)
-  evaluation/             scorer, custom cases, usage report generator, reports
+  evaluation/             scorer, custom cases, usage report generator, output validator, reports
+  tests/                  unit tests of the validation layer (fake OpenAI SDK, no network)
 ```

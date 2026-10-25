@@ -11,3 +11,33 @@ dependencies = [
 
 [tool.uv]
 package = false  # scripts under code/ are run directly with `uv run`; nothing to build or install
+
+[dependency-groups]
+dev = ["ruff>=0.6", "mypy>=1.11"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+src = ["code"]
+
+[tool.ruff.lint]
+# pycodestyle, pyflakes, isort, pyupgrade, bugbear, docstrings on public classes/functions/methods
+select = ["E", "W", "F", "I", "UP", "B", "D101", "D102", "D103"]
+
+[tool.ruff.lint.per-file-ignores]
+"code/tests/*" = ["D101", "D102", "D103"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["agent"]
+
+[tool.mypy]
+python_version = "3.11"
+mypy_path = "code"
+files = ["code"]
+explicit_package_bases = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true

@@ -7,6 +7,7 @@ from collections import defaultdict
 
 from .. import runlog
 from ..identity import Person, identifier_keys, user_ref_pattern
+from ..llm.client import LLMClient
 from ..loaders import Activity, load_activity, load_manifest
 from .model import EMAIL_RE, Observation, SystemMap
 from .multimodal import load_multimodal
@@ -16,7 +17,9 @@ LINK_EVENT = "LINK_RESOURCE_IDENTITY"
 
 
 class EvidenceIndex:
-    def __init__(self, offline: bool = True, llm=None, fresh: bool = False) -> None:
+    """Every evidence file and the activity stream, parsed once and indexed by resource and identifier."""
+
+    def __init__(self, offline: bool = True, llm: LLMClient | None = None, fresh: bool = False) -> None:
         self.files = {ev.file_id: ev for ev in load_manifest()}
         self.activity = load_activity()
         self.catalog_links: list[tuple[str, str, Activity]] = []  # (resource_id, identity key, activity)
@@ -36,17 +39,22 @@ class EvidenceIndex:
             try:
                 self.observations.extend(parse_file(ev))
             except Exception as exc:  # one unreadable artifact must not stop the audit of every case
-                runlog.event("evidence_error", f"{ev.file_id} ({ev.path.name}) skipped: {type(exc).__name__}: {exc}")
+                runlog.event(
+                    runlog.EventKind.EVIDENCE_ERROR,
+                    f"{ev.file_id} ({ev.path.name}) skipped: {type(exc).__name__}: {exc}",
+                )
         self.systems = SystemMap(self.observations, self.activity)
         self.observations = resolve_systems(self.observations, self.systems)
-        self.observations.extend(load_multimodal(self.files, self.aliases, self.systems, llm=llm, offline=offline,
-                                                 fresh=fresh))
+        self.observations.extend(
+            load_multimodal(self.files, self.aliases, self.systems, llm=llm, offline=offline, fresh=fresh)
+        )
         self.by_resource: dict[str, list[Observation]] = defaultdict(list)
         self.by_key: dict[str, set[str]] = defaultdict(set)
         self.coverage: dict[str, list[Observation]] = defaultdict(list)  # system -> complete listings
         for o in self.observations:
             if o.resource_id == "*":
-                self.coverage[o.system_id].append(o)
+                if o.system_id is not None:  # always set: resolve_systems drops unresolved listings
+                    self.coverage[o.system_id].append(o)
                 continue
             self.by_resource[o.resource_id].append(o)
             for key in o.all_keys():
@@ -68,8 +76,11 @@ class EvidenceIndex:
         return dict(out)
 
     def observations_for(self, resource_id: str, audit_at: str) -> list[Observation]:
-        return sorted((o for o in self.by_resource.get(resource_id, ()) if visible(o, audit_at)),
-                      key=lambda o: (o.observed_at, o.file_captured_at, o.file_id))
+        """Observations of the resource visible at audit time, oldest first."""
+        return sorted(
+            (o for o in self.by_resource.get(resource_id, ()) if visible(o, audit_at)),
+            key=lambda o: (o.observed_at, o.file_captured_at, o.file_id),
+        )
 
     def absence_proof(self, resource_id: str, system_id: str, audit_at: str) -> Observation | None:
         """Newest citable complete listing of the system that does not contain the resource."""
@@ -85,7 +96,8 @@ class EvidenceIndex:
         return max(proofs, key=lambda o: (o.observed_at, o.file_captured_at, o.file_id), default=None)
 
     def system_of(self, resource_id: str) -> str:
-        systems = {o.system_id for o in self.by_resource.get(resource_id, ())}
+        """The resource's owning system: the learned prefix system if the evidence agrees, else the evidence's."""
+        systems = {o.system_id for o in self.by_resource.get(resource_id, ()) if o.system_id is not None}
         guess = self.systems(resource_id)
         return guess if guess in systems or not systems else sorted(systems)[0]
 
