@@ -5,7 +5,7 @@
       "case_id": null,
       "input_tokens": 3119,
       "model": "gpt-6-luna",
-      "output_tokens": 845,
+      "output_tokens": 666,
       "purpose": "vision"
     },
     {
@@ -13,55 +13,7 @@
       "case_id": null,
       "input_tokens": 2914,
       "model": "gpt-6-luna",
-      "output_tokens": 616,
-      "purpose": "vision"
-    },
-    {
-      "cached_tokens": 0,
-      "case_id": null,
-      "input_tokens": 2982,
-      "model": "gpt-6-luna",
-      "output_tokens": 749,
-      "purpose": "vision"
-    },
-    {
-      "cached_tokens": 0,
-      "case_id": null,
-      "input_tokens": 734,
-      "model": "gpt-6-luna",
-      "output_tokens": 815,
-      "purpose": "vision"
-    },
-    {
-      "cached_tokens": 0,
-      "case_id": null,
-      "input_tokens": 2982,
-      "model": "gpt-6-luna",
-      "output_tokens": 265,
-      "purpose": "vision"
-    },
-    {
-      "cached_tokens": 0,
-      "case_id": null,
-      "input_tokens": 2914,
-      "model": "gpt-6-luna",
-      "output_tokens": 528,
-      "purpose": "vision"
-    },
-    {
-      "cached_tokens": 0,
-      "case_id": null,
-      "input_tokens": 863,
-      "model": "gpt-6-luna",
-      "output_tokens": 741,
-      "purpose": "vision"
-    },
-    {
-      "cached_tokens": 0,
-      "case_id": null,
-      "input_tokens": 3119,
-      "model": "gpt-6-luna",
-      "output_tokens": 636,
+      "output_tokens": 434,
       "purpose": "vision"
     },
     {
@@ -75,17 +27,9 @@
     {
       "cached_tokens": 0,
       "case_id": null,
-      "input_tokens": 2914,
+      "input_tokens": 734,
       "model": "gpt-6-luna",
-      "output_tokens": 1018,
-      "purpose": "vision"
-    },
-    {
-      "cached_tokens": 0,
-      "case_id": null,
-      "input_tokens": 2914,
-      "model": "gpt-6-luna",
-      "output_tokens": 542,
+      "output_tokens": 540,
       "purpose": "vision"
     },
     {
@@ -93,7 +37,63 @@
       "case_id": null,
       "input_tokens": 2982,
       "model": "gpt-6-luna",
-      "output_tokens": 1159,
+      "output_tokens": 240,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 2914,
+      "model": "gpt-6-luna",
+      "output_tokens": 672,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 863,
+      "model": "gpt-6-luna",
+      "output_tokens": 926,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 3119,
+      "model": "gpt-6-luna",
+      "output_tokens": 552,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 2982,
+      "model": "gpt-6-luna",
+      "output_tokens": 840,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 2914,
+      "model": "gpt-6-luna",
+      "output_tokens": 773,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 2914,
+      "model": "gpt-6-luna",
+      "output_tokens": 1092,
+      "purpose": "vision"
+    },
+    {
+      "cached_tokens": 0,
+      "case_id": null,
+      "input_tokens": 2982,
+      "model": "gpt-6-luna",
+      "output_tokens": 1071,
       "purpose": "vision"
     },
     {
@@ -101,7 +101,7 @@
       "case_id": null,
       "input_tokens": 693,
       "model": "gpt-6-luna",
-      "output_tokens": 338,
+      "output_tokens": 378,
       "purpose": "vision"
     },
     {
@@ -109,7 +109,7 @@
       "case_id": null,
       "input_tokens": 747,
       "model": "gpt-6-luna",
-      "output_tokens": 539,
+      "output_tokens": 423,
       "purpose": "vision"
     },
     {
@@ -117,7 +117,7 @@
       "case_id": null,
       "input_tokens": 2155,
       "model": "gpt-6-luna",
-      "output_tokens": 193,
+      "output_tokens": 222,
       "purpose": "vision"
     },
     {
@@ -3122,28 +3122,28 @@
     }
   ],
   "summary": {
-    "avg_cost_per_request_usd": 3.724362934362935e-05,
-    "avg_tokens_per_request": 297.2934362934363,
+    "avg_cost_per_request_usd": 3.7094015444015445e-05,
+    "avg_tokens_per_request": 296.9942084942085,
     "cache_hits": {
       "intent": 143
     },
     "cached_input_tokens": 0,
-    "cost_usd": 0.019292200000000002,
+    "cost_usd": 0.0192147,
     "input_tokens": 144267,
     "model_calls": 390,
-    "output_tokens": 9731,
+    "output_tokens": 9576,
     "per_model": {
       "gpt-6-luna": {
         "cached_tokens": 0,
         "calls": 390,
-        "cost_usd": 0.019292199999999995,
+        "cost_usd": 0.019214699999999998,
         "input_tokens": 144267,
-        "output_tokens": 9731,
+        "output_tokens": 9576,
         "purposes": [
           "intent",
           "vision"
         ],
-        "total_tokens": 153998
+        "total_tokens": 153843
       }
     },
     "pricing_usd_per_1m_tokens": {
@@ -3155,6 +3155,6 @@
     },
     "provider": "OpenAI",
     "requests": 518,
-    "total_tokens": 153998
+    "total_tokens": 153843
   }
 }

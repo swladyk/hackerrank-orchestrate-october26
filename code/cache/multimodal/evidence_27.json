@@ -15,7 +15,7 @@
       "related_references": [],
       "restore_allowed": null,
       "retention_until": "2033-05-04",
-      "status": null,
+      "status": "Retained",
       "user_ref": "user_08"
     },
     {
@@ -30,7 +30,7 @@
       "related_references": [],
       "restore_allowed": null,
       "retention_until": "2033-05-09",
-      "status": null,
+      "status": "Retained",
       "user_ref": "user_12"
     },
     {
@@ -45,7 +45,7 @@
       "related_references": [],
       "restore_allowed": null,
       "retention_until": "2033-05-14",
-      "status": null,
+      "status": "Retained",
       "user_ref": "user_17"
     },
     {
@@ -60,7 +60,7 @@
       "related_references": [],
       "restore_allowed": null,
       "retention_until": "2033-05-18",
-      "status": null,
+      "status": "Retained",
       "user_ref": "user_21"
     },
     {
@@ -75,7 +75,7 @@
       "related_references": [],
       "restore_allowed": null,
       "retention_until": "2033-05-23",
-      "status": null,
+      "status": "Retained",
       "user_ref": "user_24"
     },
     {
@@ -90,7 +90,7 @@
       "related_references": [],
       "restore_allowed": null,
       "retention_until": "2033-05-28",
-      "status": null,
+      "status": "Retained",
       "user_ref": "user_29"
     }
   ]

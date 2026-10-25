@@ -761,3 +761,60 @@ branch=main
 repo_root=/home/stanislaw/hackerrank-orchestrate-october26
 worktree=main
 parent_agent=none
+
+## [2026-10-24T20:15:00+02:00] Are outside API keys (OpenAI) allowed in the solution?
+
+User Prompt (verbatim, secrets redacted):
+Okay, don't change any code. Just answer my question. Is my solution correct for the answer for this hackathon? I mean, can we use outside API keys? As I used from OpenAI?
+
+Agent Response Summary:
+Answered from AGENTS.md §4 and §6: any model, provider or AI tool is allowed (subject to official event rules), as long as the key is read from an environment variable / uncommitted .env and never committed or put in code.zip. Verified read-only that .env is gitignored, was never committed, and no key-like strings exist in git history. No code changed.
+
+Actions:
+* git ls-files / git check-ignore / git log for .env; git grep for key patterns (read-only)
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none
+
+## [2026-10-24T20:25:00+02:00] Explain leaderboard score columns
+
+User Prompt (verbatim, secrets redacted):
+[screenshot of the challenge leaderboard, top 6 rows] This is a screenshot from the leaderboard. What is each position? suggesting?
+
+Agent Response Summary:
+Explained the five score columns (chat transcript /10, AI judge interview /30, output CSV /30, code zip /30, total /100) and mapped each to the submission artifacts in AGENTS.md §6.9. Pointed out patterns: output CSV tops out at 28.5 for four of six leaders (a likely ceiling, consistent with unanswerable cases), and the ranking is mostly decided by the interview, code zip and transcript. No files changed besides this log; leaderboard names not recorded.
+
+Actions:
+* none (explanation only)
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none
+
+## [2026-10-24T20:35:00+02:00] Can the solution be submitted multiple times?
+
+User Prompt (verbatim, secrets redacted):
+Can I submit solutions multiple times, or is it just one time?
+
+Agent Response Summary:
+Searched the repo docs (README.md, README_2.md, AGENTS.md, agent_trace_instructions.md); none say whether resubmission is allowed, so told the user this is not stated and to check the challenge page. Flagged that agent_trace_instructions.md asks for an extra agent-trace.zip with the submission, and recommended treating the submission as one-shot and running the pre-submit checklist first. No files changed besides this log.
+
+Actions:
+* grep over repository Markdown for submission rules; read README.md submission section and agent_trace_instructions.md
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none

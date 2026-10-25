@@ -1,5 +1,5 @@
 {
-  "artifact_title": "Haruka Sato — Customer Operations",
+  "artifact_title": "Customer Operations – Haruka Sato",
   "file_id": "evidence_04",
   "method": "llm:gpt-6-luna",
   "records": [
@@ -34,8 +34,7 @@
       "record_kind": "other",
       "reference": "ORD-20265762",
       "related_references": [
-        "account_5762",
-        "user_11"
+        "account_5762"
       ],
       "restore_allowed": null,
       "retention_until": null,
@@ -52,8 +51,7 @@
       "record_kind": "other",
       "reference": "ORD-20265518",
       "related_references": [
-        "account_5762",
-        "user_11"
+        "account_5762"
       ],
       "restore_allowed": null,
       "retention_until": null,
@@ -71,8 +69,7 @@
       "reference": "support_9538",
       "related_references": [
         "CS-8538",
-        "account_5762",
-        "user_11"
+        "account_5762"
       ],
       "restore_allowed": null,
       "retention_until": null,

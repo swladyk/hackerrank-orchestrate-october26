@@ -43,6 +43,7 @@
       "record_kind": "backup_archive",
       "reference": "backup_9287",
       "related_references": [
+        "segment-42-20260426.tar.zst",
         "backup_9286",
         "backup_9281"
       ],

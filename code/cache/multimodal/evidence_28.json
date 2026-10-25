@@ -33,6 +33,7 @@
       "reference": "ORD-20265034",
       "related_references": [
         "CS-5034",
+        "support_1034",
         "SWF-884103"
       ],
       "restore_allowed": null,

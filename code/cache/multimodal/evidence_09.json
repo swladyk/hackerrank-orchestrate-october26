@@ -12,9 +12,7 @@
       "phone": null,
       "record_kind": "search_document",
       "reference": "search_428",
-      "related_references": [
-        "user_13"
-      ],
+      "related_references": [],
       "restore_allowed": null,
       "retention_until": null,
       "status": null,

@@ -13,11 +13,11 @@
       "record_kind": "security_audit_record",
       "reference": "audit_record_003",
       "related_references": [
-        "CJX-20260905-0630"
+        "user_03"
       ],
       "restore_allowed": null,
       "retention_until": "2027-08-25",
-      "status": "Account closure recorded",
+      "status": null,
       "user_ref": "user_03"
     }
   ]

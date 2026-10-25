@@ -12,7 +12,9 @@
       "phone": null,
       "record_kind": "security_audit_record",
       "reference": "audit_record_003",
-      "related_references": [],
+      "related_references": [
+        "user_03"
+      ],
       "restore_allowed": null,
       "retention_until": null,
       "status": "Valid",
@@ -27,7 +29,9 @@
       "phone": null,
       "record_kind": "security_audit_record",
       "reference": "audit_record_002",
-      "related_references": [],
+      "related_references": [
+        "user_03"
+      ],
       "restore_allowed": null,
       "retention_until": null,
       "status": "Valid",
@@ -42,7 +46,9 @@
       "phone": null,
       "record_kind": "security_audit_record",
       "reference": "audit_record_001",
-      "related_references": [],
+      "related_references": [
+        "user_03"
+      ],
       "restore_allowed": null,
       "retention_until": null,
       "status": "Valid",
@@ -57,7 +63,9 @@
       "phone": null,
       "record_kind": "security_audit_record",
       "reference": "audit_record_006",
-      "related_references": [],
+      "related_references": [
+        "user_03"
+      ],
       "restore_allowed": null,
       "retention_until": null,
       "status": "Valid",
@@ -72,7 +80,9 @@
       "phone": null,
       "record_kind": "security_audit_record",
       "reference": "audit_record_005",
-      "related_references": [],
+      "related_references": [
+        "user_03"
+      ],
       "restore_allowed": null,
       "retention_until": null,
       "status": "Valid",
@@ -87,7 +97,9 @@
       "phone": null,
       "record_kind": "security_audit_record",
       "reference": "audit_record_004",
-      "related_references": [],
+      "related_references": [
+        "user_03"
+      ],
       "restore_allowed": null,
       "retention_until": null,
       "status": "Valid",
