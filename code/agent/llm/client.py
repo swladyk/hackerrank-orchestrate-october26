@@ -47,7 +47,7 @@ class LLMClient:
     def client(self) -> Any:
         """The lazily created SDK client."""
         if not self.available:
-            raise LLMUnavailable("OPENAI_API_KEY is not set (see README_2.md)")
+            raise LLMUnavailable("OPENAI_API_KEY is not set (see README.md, section 2)")
         if self._client is None:
             from openai import OpenAI
 

@@ -1,167 +1,333 @@
-# HackerRank Orchestrate - October 2026
+# Ghost Data Still Exists — deletion-audit agent
 
-## Ghost Data Still Exists
+An AI-assisted agent for the HackerRank Orchestrate (October 2026) challenge
+[**Ghost Data Still Exists**](https://www.hackerrank.com/contests/hackerrank-orchestrate-october26/challenges/ghost-data-still-exists).
 
-Build an AI agent that audits whether a user's personal data was actually deleted.
+For every request in `dataset/deletion_requests.csv` it decides whether the person actually asked for deletion,
+reconstructs every identifier they ever had, finds every copy of their data across databases, replicas, logs,
+exports, indexes, backups and documents, determines the true state of each copy **at the case's `audit_at`**,
+applies `dataset/deletion_rules.csv`, and writes `output.csv` (`case_id,deletion_status,steps_json`) with
+evidence-backed findings, an ordered remediation plan and the verification checks.
 
-A deletion workflow may report **Complete** while data still exists in databases, logs, support attachments, exports, search indexes, archives, or backups. Sync and restore processes may also bring deleted data back.
+A language model is used for exactly two judgement tasks (request intent, reading screenshots/PDFs). Everything
+else is deterministic Python, so a re-run with warm caches reproduces `output.csv` byte for byte at zero cost.
 
-For each request, the agent must first determine whether deletion was actually requested. It then returns `COMPLETE`, `INCOMPLETE`, or `NOT_APPLICABLE`, reports any remaining data or recreation risk, and produces the ordered remediation and verification steps required to finish an authorized deletion safely.
-
-Read [`problem_statement.md`](./problem_statement.md) for the complete challenge contract.
-
-> **Our solution:** setup, run, subset/debug runs, token-usage monitor and evaluation instructions are in
-> [`README_2.md`](./README_2.md). Quick start:
->
-> ```bash
-> uv sync                                 # creates .venv from pyproject.toml + uv.lock
-> cp .env.example .env                    # then set OPENAI_API_KEY
-> uv run code/main.py                     # -> output.csv
-> uv run code/evaluation/main.py          # -> metrics on the labelled samples + custom cases
-> ```
+```bash
+uv sync                      # install the locked environment
+cp .env.example .env         # add OPENAI_API_KEY (optional with warm caches)
+uv run code/main.py          # -> output.csv (518 rows)
+uv run code/evaluation/main.py --offline   # -> metrics on the labelled samples + custom cases
+```
 
 ---
 
-## Quick Start
+## Contents
 
-Clone the repository and move into the project directory:
+In-depth documentation: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) (data flow, Mermaid diagram, module
+responsibilities, identifiers, sync/restore paths, retention, failure-handling layers) and
+[`docs/DECISIONS.md`](docs/DECISIONS.md) (design decisions, alternatives considered and why).
 
-```bash
-git clone https://github.com/interviewstreet/hackerrank-orchestrate-october26.git
-cd hackerrank-orchestrate-october26
-```
-
-Start your AI coding tool from the **repository root** so it automatically reads [`AGENTS.md`](./AGENTS.md) and logs your session turns to `log.txt` in the root directory.
-
-Build your solution in `code/main.py`, or use another language and document its setup and run command clearly in your README.
-
-Your solution must:
-
-- Read the input files from `dataset/`
-- Generate one prediction row for every request in `dataset/deletion_requests.csv`
-- Write the final predictions to `output.csv` in the repository root
-
-Run the starter Python entry point with:
-
-```bash
-python3 code/main.py
-```
-
-The blank template at `dataset/output.csv` is provided as a reference. Your final generated file for submission must be the root-level `output.csv`.
-
-
-## Dataset
-
-All participant-facing files are in `dataset/`:
-
-| File | Contents |
-| --- | --- |
-| `deletion_requests.csv` | 518 requests |
-| `sample_deletion_requests.csv` | 32 sample requests |
-| `sample_output.csv` | Correct sample answers |
-| `user_identities.csv` | Current user identities |
-| `user_audit_log.csv` | Historical identity changes |
-| `system_activity.csv` | Activity across services and data processes |
-| `deletion_rules.csv` | Required treatment for each data category |
-| `evidence_files.csv` | Manifest of supplied evidence files |
-| `output.csv` | Blank output template |
-
-Evidence is stored under `dataset/evidence/` and may include PDFs, images, logs, JSON, plain text, or SQL snapshot exports. SQL captures may contain a primary database, regional replicas, a reporting replica, or a failover replica so replication drift can be investigated directly. The `.sql` files are readable as text and executable with SQLite.
-
-Only `deletion_requests.csv` requires answers. The other files provide evidence and context.
+1. [Setup](#1-setup)
+2. [Environment variables](#2-environment-variables)
+3. [Running the agent](#3-running-the-agent)
+4. [Running the evaluation and checks](#4-running-the-evaluation-and-checks)
+5. [Architecture overview](#5-architecture-overview)
+6. [Key design decisions](#6-key-design-decisions)
+7. [Safety and failure handling](#7-safety-and-failure-handling)
+8. [Known limitations](#8-known-limitations)
+9. [Current results](#9-current-results)
+10. [Submission](#10-submission)
 
 ---
 
-## Output
+## 1. Setup
 
-Create `output.csv` with these columns in this exact order:
+**Prerequisites**
+
+* [uv](https://docs.astral.sh/uv/) (`curl -LsSf https://astral.sh/uv/install.sh | sh` or `pipx install uv`).
+  It manages the Python version, the virtual environment and the dependencies.
+* Python 3.11+ (uv downloads one if none is installed; developed on 3.14).
+* For online runs: an OpenAI API key with access to `gpt-6-luna` (Decisions API and Responses API).
+
+**Install** (run everything from the repository root):
+
+```bash
+uv sync                 # runtime dependencies (openai, pypdf), exact versions from uv.lock
+uv sync --group dev     # + ruff and mypy, for the quality checks
+```
+
+`uv run …` executes inside that environment, so the virtualenv never needs activating. Dependencies are declared
+in `pyproject.toml` and pinned in `uv.lock`.
+
+## 2. Environment variables
+
+Configuration is read from the environment, or from a `.env` file at the repository root (git-ignored; real
+environment variables win). Start from the template:
+
+```bash
+cp .env.example .env
+```
+
+| Variable | Required | Default | Purpose |
+|---|---|---|---|
+| `OPENAI_API_KEY` | online runs only | — | OpenAI key. Not needed for `--offline` runs on the committed caches. |
+| `DECISIONS_MODEL` | no | `gpt-6-luna` | Model for intent classification (Decisions API, one `choice` question). |
+| `VISION_MODEL` | no | `gpt-6-luna` | Model for screenshot/PDF extraction (Responses API, strict JSON schema). |
+| `PRICING_JSON` | no | `code/agent/llm/pricing.json` | Override token prices (USD per 1M tokens) for the cost estimate. |
+
+`.env.example`:
 
 ```text
-case_id,deletion_status,steps_json
+OPENAI_API_KEY=
+
+# DECISIONS_MODEL=gpt-6-luna
+# VISION_MODEL=gpt-6-luna
+# PRICING_JSON={"gpt-6-luna": {"input": 0.10, "cached_input": 0.01, "output": 0.50}}
 ```
 
-Produce exactly one row per request. `deletion_status` is `COMPLETE`, `INCOMPLETE`, or `NOT_APPLICABLE`. `steps_json` is an ordered JSON array containing findings, remediation actions, and verification checks. Use an empty array (`[]`) for `NOT_APPLICABLE`. Evidence references may be a `file_id`, `activity_id`, or `audit_id`. Determine the resource state at `audit_at` from the available evidence; reported workflow statuses and operation results are claims. Use `dataset/sample_output.csv` as the format reference.
+Keep comments on their own lines in `.env`: values are read verbatim to the end of the line. Every other setting
+(paths, dataset file names, retry limits, timeouts, attribution time windows) lives in one module,
+[`code/agent/config.py`](code/agent/config.py). The API key is never written to logs, caches or reports.
 
-The final file must contain 518 data rows sorted by `case_id` (plus the header row). The grader parses `steps_json` as JSON, so object-key order and whitespace do not matter; array order does. Order findings, remediation, and verification in that phase order. Within a phase, follow the operation order in the problem statement, then sort by `system_id` and `resource_id`.
+## 3. Running the agent
 
----
+| Command | What it does | Writes |
+|---|---|---|
+| `uv run code/main.py` | Full run over all 518 requests | `output.csv`, `code/evaluation/usage_run.json`, `code/evaluation/run_events.jsonl` |
+| `uv run code/main.py --offline` | Same, but never calls the API: cached model answers only | same |
+| `uv run code/main.py --fresh` | Ignore the caches and call the models again (cold-cost run for the usage report) | same |
+| `uv run code/main.py --limit 5` | First 5 cases | `output_subset.csv`, `*_subset.json(l)` |
+| `uv run code/main.py --cases case_33,case_40` | Selected cases | `output_subset.csv`, `*_subset.json(l)` |
+| `uv run code/main.py --requests dataset/sample_deletion_requests.csv --output sample_pred.csv` | Another request file | the given output |
+| `uv run code/main.py --requests dataset/sample_deletion_requests.csv --explain case_11` | Print the investigation of one case | stdout only |
 
-## Evaluation
+Subset runs never overwrite `output.csv`. Relative paths are resolved against the repository root, so the CLI
+works from any directory. Progress, the usage summary and every failure/fallback are logged to stderr;
+`--explain` prints the resolved user, the intent decision, each assessed record with all of its observations
+(file, time, exists / exposed / flow / restore flags), the verdict and the final steps.
 
-`output.csv` will be compared with hidden canonical answers. Scoring considers:
+**Caches.** Intent answers are cached per unique request text in `code/cache/intent.json`; screenshot/PDF
+extractions per file in `code/cache/multimodal/<file_id>.json`, keyed by a SHA-256 of the file bytes (a changed
+file is re-extracted). Both caches are committed, so `--offline` reproduces the submitted `output.csv`.
+Without caches and without a key, the agent falls back to a rule-based intent check and a text-only PDF parser
+(screenshots are skipped) — usable for development, but less accurate.
 
-- deletion assessment accuracy;
-- current and historical identity resolution;
-- discovery of remaining data and recreation risks;
-- correct policy application and evidence references; and
-- completeness and ordering of remediation and verification steps.
-
-Your `code.zip` must include:
-
-```text
-code/evaluation/evaluation_report.md
-code/evaluation/usage_report.md
-```
-
-- `evaluation_report.md` must cover case, row, field, and sequence accuracy, at least three additional evaluation cases created by you, failures found, and improvements made.
-- `usage_report.md` must cover the final full-dataset run, including model providers and names, model calls, input and output tokens, total and average tokens per request, and estimated total and per-request cost. Include per-model and overall totals when using multiple models.
-
-**Important:** Place `evaluation_report.md` and `usage_report.md` inside `code/evaluation/` (matching `code/evaluation/main.py` in this starter layout), write your complete evaluation metrics, custom evaluation test cases, and token/cost breakdowns directly inside those Markdown files, and keep prompts in source code or Markdown files. Automated code evaluation ignores raw data files (`.csv`, `.tsv`, `.json`, `.jsonl`, `.sql`, `.log`), so content stored only in those formats will not be visible to the code judge or AI interviewer.
-
----
-
-## Chat Transcript
-
-This repository includes [`AGENTS.md`](./AGENTS.md), which instructs compatible AI coding tools to append conversation summaries to `log.txt` in the repository root:
-
-| Platform | Path |
-| --- | --- |
-| macOS / Linux | `<repo root>/log.txt` |
-| Windows | `<repo root>\log.txt` |
-
-- Always launch your AI coding agent from the repository root (or explicitly ask it to read `./AGENTS.md` first) so every turn is logged to `log.txt` with the required `User Prompt`, `Agent Response Summary`, `Actions`, and `Context` sections.
-- Upload `log.txt` directly as your `chat_transcript` submission on HackerRank.
-- Do not include API keys, tokens, credentials, or secrets in prompts, code, configuration, or `log.txt`.
-
----
-
-## Packaging `code.zip` and Submission
-
-| Item | Description |
-| --- | --- |
-| `code.zip` | Runnable solution, prompts, configuration, `README.md`, and `evaluation/` reports |
-| `output.csv` | One answer row for each of the 518 requests in `dataset/deletion_requests.csv` |
-| `chat_transcript` | The root `log.txt` file generated by your coding agent |
-| AI interview | Live explanation of your architecture, approach, and evaluation |
-
-You may use any programming language, model, framework, or retrieval approach. Include clear setup and execution instructions in `README.md` inside `code.zip`.
-
-To package `code.zip` from the repository root without bundling the dataset:
-
-**macOS / Linux:**
+## 4. Running the evaluation and checks
 
 ```bash
-zip -r code.zip README.md code -x "*/__pycache__/*" "*/.venv/*" "*/venv/*" "*/node_modules/*" "*/.git/*" "*/.DS_Store"
+uv run code/evaluation/main.py --offline            # score the 32 labelled samples + 4 custom cases
+uv run code/evaluation/main.py --offline --verbose  # + missing/extra steps per non-exact case
+uv run code/evaluation/main.py --write-report       # refresh the metrics block of evaluation_report.md
+uv run code/evaluation/validate_output.py           # output.csv against the submission contract
+uv run code/evaluation/usage_report.py              # usage_run.json -> code/evaluation/usage_report.md
+uv run python -m unittest discover -s code/tests    # validation layer (fake OpenAI SDK, no network)
+uv run ruff check code && uv run ruff format --check code
+uv run mypy                                         # every function fully annotated
 ```
 
-**Windows (PowerShell):**
+`code/evaluation/main.py` runs the agent end to end on the labelled requests and reports:
 
-```powershell
-Compress-Archive -Path README.md, code -DestinationPath code.zip -Force
+* **case-level** `deletion_status` accuracy;
+* **step-level** precision / recall / F1, steps matched as a multiset on
+  (phase, system_id, resource_id, operation, state, evidence_id), also reported ignoring `evidence_id`;
+* **field-level** accuracy, steps aligned by array position (the grader keeps array order);
+* **sequence** accuracy: the whole `steps_json` array exactly equal.
+
+Other flags: `--pred <csv>` scores an existing predictions file, `--gold <csv>` another gold file,
+`--no-custom` skips the custom cases. The custom cases (`code/evaluation/custom_cases/`) were written by hand
+from the rules and the evidence and are described in
+[`code/evaluation/evaluation_report.md`](code/evaluation/evaluation_report.md), together with the history of
+failures found and improvements made. Token usage and cost of the final run are in
+[`code/evaluation/usage_report.md`](code/evaluation/usage_report.md).
+
+## 5. Architecture overview
+
+```text
+deletion_requests.csv
+        │
+        ▼
+ 1. Intent ──────────── LLM (Decisions API, cached) ── not a deletion ──▶ NOT_APPLICABLE, []
+        │ deletion
+        ▼
+ 2. Identity ────────── user_identities.csv + user_audit_log.csv
+        │                → every email / phone / name / email hash / user_id the person had at audit_at
+        ▼
+ 3. Discovery ───────── global evidence index (built once for all cases)
+        │                SQL snapshots · JSON bundles/ledgers · 6 log formats · handover text
+        │                · screenshots/PDFs (LLM extraction, cached) · catalog links in system_activity.csv
+        │                + records with no identifier left, attributed through the deletion worker's job
+        ▼
+ 4. State at audit_at ─ newest visible observation per record; replicas count; complete listings prove absence;
+        │                workflow statuses and activity results are claims, not proof
+        ▼
+ 5. Policy ──────────── deletion_rules.csv: DELETE / REDACT / ANONYMIZE / RETAIN / tombstone; data flows; backups
+        ▼
+ 6. Plan ────────────── findings → remediation (flows and restores first) → verification, contract order
+        ▼
+ 7. Validation ──────── contract + cross-field checks, deterministic repair, crash fallback
+        ▼
+   output.csv  (+ usage_run.json, run_events.jsonl)
 ```
 
-When packaging `code.zip`:
+The full data flow with a Mermaid diagram is in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-- Keep your evaluation reports in `code/evaluation/` so they are bundled automatically with `code` (or add `evaluation` to the archive command above if you placed them in a top-level `evaluation/` directory).
-- Do **not** include `dataset/`, virtual environments (`.venv`, `venv`, `node_modules`), or build caches (`__pycache__`). On Windows, keep `.venv` at the repository root (outside `code/`) and remove any `code/__pycache__` folders before running `Compress-Archive`.
-- Do **not** include nested archives (`.zip`, `.tar`, `.gz`, `.tgz`, `.7z`, `.rar`) inside `code.zip` — submissions containing nested archive files will be rejected.
+Module layout (`code/agent/`; each layer only imports from the layers above it, see `agent/__init__.py`):
 
-Before submitting, confirm that:
+| Layer | Modules | Responsibility |
+|---|---|---|
+| Configuration and vocabulary | `config.py`, `schema.py` | All paths, models, limits and tuning windows; enums for statuses, phases, operations, states, actions, verdicts; the `Step` record |
+| Data loading | `loaders.py`, `identity.py` | Dataset CSVs → typed records; current + historical identifiers, normalization, email hashing |
+| Evidence gathering | `evidence/parsers.py`, `evidence/multimodal.py`, `llm/vision.py`, `evidence/model.py`, `evidence/index.py` | Every evidence format → `Observation`s; learned resource→system map; index by resource and identifier; absence proofs |
+| Reasoning | `llm/intent.py`, `workflow.py`, `policy.py`, `audit.py`, `planner.py` | Intent; attribution of worker activity to requests; data categories and rules; per-resource state and verdict; ordered steps |
+| Validation | `validation.py` | Contract and cross-field checks of each answer, deterministic repair |
+| Output | `output.py` | Deterministic `output.csv` serialization |
+| Infrastructure | `llm/client.py`, `llm/usage.py`, `runlog.py` | Validated, retried model calls; token/cost accounting; failure/fallback event log |
 
-- `output.csv` has the exact header `case_id,deletion_status,steps_json` and contains all 518 data rows sorted by `case_id`;
-- every `steps_json` value is a valid JSON array with consecutive step numbers starting at `1`;
-- findings cite valid evidence IDs, and `COMPLETE` verification steps cite evidence proving the current state;
-- proposed remediation and future verification steps use an empty `evidence_id` (`""`);
-- `code.zip` includes your runnable code, `README.md`, `code/evaluation/evaluation_report.md`, and `code/evaluation/usage_report.md`;
-- `log.txt` follows the `AGENTS.md` turn format and is uploaded to the `chat_transcript` slot; and
-- no API keys, credentials, real personal data, or sensitive configuration values are included.
+Entry points: `code/main.py` (agent CLI), `code/evaluation/` (scorer, custom cases, validator, usage report),
+`code/tests/` (unit tests).
+
+## 6. Key design decisions
+
+A summary; every decision with its alternatives and measured effects is in [`docs/DECISIONS.md`](docs/DECISIONS.md).
+
+**The LLM only does what rules cannot.** Two tasks need language understanding: deciding whether a free-text,
+multilingual request authorizes deletion (negations such as "send me a copy, don't delete anything" in French
+defeat keyword rules), and reading screenshots/PDFs. Identity resolution, evidence parsing, point-in-time
+reasoning, policy and ordering are deterministic: they are exact, auditable, free, and they make the output
+reproducible. The whole full run costs about $0.02 cold and $0 warm.
+
+**Two clocks per fact: *visible* vs *citable*.** A fact counts if it was *recorded* by `audit_at`, even in a
+file exported later; only files *captured* by `audit_at` may be cited. When the only direct sighting is
+uncitable, absence is proven by the newest citable complete listing of that system. A newer complete listing
+that omits a record also overrides an older sighting of it — except for records the policy retains, which can be
+archived outside the listed system.
+
+**Claims are not proof.** Workflow statuses (`reported_status`) and activity results (`SUCCESS`) are used only to
+*attribute* work to a request, never as evidence of the resulting state. State comes from snapshots, replicas,
+logs and documents.
+
+**Exact identifiers, no fuzzy matching.** Emails are case-folded, phones reduced to digits, names accent-folded,
+email hashes recomputed with SHA-256. Similar-looking decoys (`Jonas Berg` vs `Jonas Berglund`) never match.
+Historical identifiers are rolled back to what the person had at `audit_at`, so later changes do not leak in.
+
+**Records that lost their identifiers are found through the worker's job.** A deleted account or an
+anonymized analytics row no longer carries an email. The deletion worker's activity stream is matched to
+requests by time window and claimed result, preferring accounts the evidence already ties to the user and
+never taking ones tied to someone else. Ambiguous actions are left out rather than guessed.
+
+**Data-driven vocabulary instead of dataset constants.** Which system owns a resource prefix is learned from
+evidence that names its system, then from activity targets. Which data category a resource belongs to comes
+from explicit `record_type`s and the rule names in `deletion_rules.csv`. User-id shape comes from the
+identity snapshot, the deletion worker is the source that emits remediation operations, and request files are
+found by their header. No case ids, file names or customer identifiers are hard-coded.
+
+**Policy before convenience.** Retained records (security audit logs within retention, legal holds) are
+verified as present, not deleted. Tombstones keep the stable `user_id` while direct identifiers are redacted.
+Data flows are disabled and restores blocked *before* dependent records are changed, so nothing is recreated.
+
+**Determinism.** Fixed sort orders everywhere, compact JSON with a fixed key order, caches with sorted keys,
+and enums that serialize exactly like the contract strings.
+
+## 7. Safety and failure handling
+
+**Secrets and data.** The API key is read only from the environment or `.env` (git-ignored) and is never
+logged, cached or written to reports. Predictions use only participant-facing files under `dataset/`; the
+agent never reads `sample_output.csv` (used only by the scorer) or any organizer-only file.
+
+**Every model answer is validated.**
+
+* *Intent* must be one of the allowed labels with a confidence in [0, 1].
+* *Extractions* must be valid JSON matching the schema, with allowed record kinds and well-formed emails,
+  dates and timestamps.
+* A refusal, an API error or an answer that fails validation is retried at most `LLM_MAX_RETRIES = 2` times,
+  with the validation error fed back to the model. API errors are retried with the previous feedback, on top of
+  the SDK's own transport retries.
+
+**Fallbacks, so one request can never break `output.csv`.**
+
+| Failure | Fallback |
+|---|---|
+| Intent still invalid after retries | Deterministic multilingual rule; the fallback answer is *not* cached, so the next run asks the model again |
+| Extraction still invalid after retries | PDFs: offline text parser; screenshots: keep the previous cached extraction |
+| One evidence file cannot be parsed | Skipped and logged; every other file is still used |
+| A case's audit crashes | Fallback row: `NOT_APPLICABLE` if not a deletion request, else `INCOMPLETE` with no steps ("could not verify" rather than an unproven `COMPLETE`) |
+| A case's answer breaks the contract | Deterministic repair: status derived from the steps, `NOT_APPLICABLE` emptied, forbidden or post-`audit_at` evidence blanked, steps reordered and renumbered. Never invents records |
+
+The validator checks, among others: `COMPLETE` has no findings or pending remediation; `NOT_APPLICABLE` lists
+nothing; every finding has a remediation and a verification step; remediation and post-remediation verification
+cite no evidence; cited evidence exists and was captured by `audit_at`; phase/operation/state agree; order and
+numbering are correct. Softer problems (e.g. a finding without evidence) are logged as warnings without changing
+the answer.
+
+**Everything is logged.** Each retry, refusal, API error, fallback, repaired or invalid case and validation
+warning is logged to stderr and saved as one JSON line in `code/evaluation/run_events.jsonl`, with a count per
+kind printed at the end of the run.
+
+## 8. Known limitations
+
+* **Account-number fallback.** When nothing in the evidence names the user's profile, the agent assumes the
+  profile id `account_<user number>` (e.g. `user_07` → `account_007`), the convention of this dataset's seeded
+  accounts, and only if no other user owns that account. This is a dataset convention rather than evidence; it
+  is kept deliberately because the sample answers rely on it.
+* **Concurrent identical jobs.** When several requests report at the same minute with the same claimed status,
+  identifier-less worker actions cannot be told apart. They are assigned first come, first served by `case_id`
+  (sample `case_23`: `account_410` vs `account_7015`). Sample ids are lower than evaluation ids, so this
+  tie-break favours the samples, and the sample score is optimistic for such cases.
+* **Undiscoverable records.** Two sample answers verify audit records (`audit_record_6645` in `case_18`,
+  `audit_record_5569` in `case_20`) that appear in no participant-visible file; no evidence-based approach can
+  produce them.
+* **Tuned heuristics.** The attribution time windows (`config.py`), the before/after-report split of worker
+  actions (it reads the "Policy action completed" message prefix) and the cue that a record found through a
+  contact lookup is a secondary-identifier copy were fitted on this data's formats.
+* **Small labelled set.** Accuracy is measured on 32 public samples and 4 hand-made cases. The 518 evaluation
+  cases are only checked structurally.
+* **Offline mode without caches is degraded.** Screenshots are skipped, and the rule-based intent check
+  mis-reads negated non-English requests (custom case `custom_02`). The committed caches avoid this.
+* **Retry path exercised only by tests.** The cached run makes no model calls, so retries, refusal handling and
+  fallbacks have been verified with a fake SDK (`code/tests/`), not against live API failures.
+* **No temperature control.** Both APIs run with their default sampling; reproducibility comes from caching,
+  so a `--fresh` run may produce slightly different intent or extraction answers.
+
+## 9. Current results
+
+Offline run on the committed caches (`uv run code/evaluation/main.py --offline`):
+
+| Metric | 32 public samples | 4 custom cases |
+|---|---|---|
+| Case-level `deletion_status` accuracy | **100.0%** | 100.0% |
+| Step-level precision / recall / F1 (all 6 fields) | **99.5% / 98.4% / 99.0%** | 100% / 100% / 100% |
+| Step-level P / R / F1 ignoring `evidence_id` | 99.5% / 98.4% / 99.0% | 100% / 100% / 100% |
+| Field-level accuracy (positional, mean of 7 fields) | 97.7% | 100.0% |
+| Sequence accuracy (`steps_json` exactly equal) | **90.6%** (29 / 32) | 100.0% |
+
+The three non-exact samples are `case_18` and `case_20` (an undiscoverable audit record each) and `case_23`
+(concurrent identical jobs); see [Known limitations](#8-known-limitations).
+
+**Full 518-case run** (`output.csv`): 352 `INCOMPLETE`, 156 `COMPLETE`, 10 `NOT_APPLICABLE`; 3,245 steps.
+`validate_output.py`: 0 errors, 0 warnings; no failure or fallback events. 94 evidence files indexed (24 SQL,
+28 JSON, 26 logs, 11 screenshots, 4 PDFs, 1 text).
+
+**Cost** (cold-cache run, [`usage_report.md`](code/evaluation/usage_report.md)): 390 calls to `gpt-6-luna`
+(375 intent, 15 vision), 153,998 tokens (297 per request), estimated **$0.019** in total, $0.00004 per request.
+Warm re-runs make no calls.
+
+**Code quality:** 14 unit tests pass; `ruff check`, `ruff format --check` and `mypy` report no issues.
+
+## 10. Submission
+
+| Item | What |
+|---|---|
+| `code.zip` | Runnable solution, prompts, configuration, `README.md`, `code/evaluation/evaluation_report.md` and `usage_report.md` |
+| `output.csv` | One row for each of the 518 requests, generated at the repository root |
+| `chat_transcript` | The root `log.txt` written by the coding agent (see [`AGENTS.md`](AGENTS.md)) |
+
+Package without the dataset, environments, caches of Python bytecode or run artifacts (macOS / Linux):
+
+```bash
+zip -r code.zip README.md README_2.md docs pyproject.toml uv.lock .env.example code -x "*/__pycache__/*" "*/.venv/*" "*/node_modules/*" "*/.git/*" "*/.DS_Store" "*.usage.json" "*.events.jsonl"
+```
+
+Before submitting: `uv run code/main.py` (or `--offline`), then `uv run code/evaluation/validate_output.py`
+must report 0 errors. Do not include `dataset/`, `.env`, API keys or nested archives.
+
+Submit at https://www.hackerrank.com/contests/hackerrank-orchestrate-october26/challenges/ghost-data-still-exists

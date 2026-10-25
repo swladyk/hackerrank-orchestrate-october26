@@ -992,3 +992,71 @@ branch=main
 repo_root=/home/stanislaw/hackerrank-orchestrate-october26
 worktree=main
 parent_agent=none
+
+## [2026-10-25T14:40:00+01:00] Rewrite README.md for the solution
+
+User Prompt (verbatim, secrets redacted):
+Rewrite README.md: setup, environment variables (with .env.example),
+how to run the agent, how to run the eval, architecture overview,
+key design decisions and why, safety and failure handling,
+known limitations, and current eval results.
+
+Agent Response Summary:
+Replaced the starter README.md with a solution README covering setup (uv), environment variables with the .env.example contents, agent and evaluation commands, a pipeline diagram and layer/module map, key design decisions, safety and failure handling (validation, retries, fallbacks, event log), known limitations (account-number fallback, concurrent jobs, undiscoverable records, tuned heuristics, offline degradation) and current results, plus the submission/packaging section. Rewrote .env.example with documented optional variables on separate comment lines, because the .env reader keeps inline comments as part of the value. Verified the claims: offline eval numbers, non-exact sample cases, full-run status counts, the custom_02 offline heuristic limitation and the would-be zip contents (zip itself is not installed here).
+
+Actions:
+* Rewrote README.md and .env.example
+* Ran evaluation (--offline --verbose), output stats, heuristic check on custom cases, CLI --help checks
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none
+
+## [2026-10-25T14:50:00+01:00] Shrink README_2.md to a pointer
+
+User Prompt (verbatim, secrets redacted):
+yes, shrink README_2 to a pointer
+
+Agent Response Summary:
+Replaced README_2.md with a short pointer to README.md, kept because pyproject.toml names it as the project readme. Updated the only code reference (the missing-API-key error message in code/agent/llm/client.py) to point to README.md section 2. ruff and mypy still pass and uv sync works with the new readme.
+
+Actions:
+* Rewrote README_2.md; edited code/agent/llm/client.py
+* uv run ruff check, uv run mypy, uv sync
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none
+
+## [2026-10-25T15:20:00+01:00] Add docs/ARCHITECTURE.md and docs/DECISIONS.md
+
+User Prompt (verbatim, secrets redacted):
+Create docs/ARCHITECTURE.md and docs/DECISIONS.md based strictly on the current code.
+ARCHITECTURE.md: data flow from input files to output.csv, module responsibilities,
+a Mermaid diagram, how identifiers / sync and restore paths / retention are handled,
+and the failure-handling layers.
+DECISIONS.md: key design decisions with alternatives considered and reasons.
+Describe only what the code actually does. Then link both from README.md.
+
+Agent Response Summary:
+Wrote docs/ARCHITECTURE.md (Mermaid data-flow diagram, step-by-step flow, module table, identifier resolution and linking incl. worker-job attribution and the account-number fallback, point-in-time/visible-vs-citable rules, absence proofs, category/action resolution, data-flow and backup handling, delete/redact/anonymize/retain table incl. tombstones, evidence citation, eight failure-handling layers) and docs/DECISIONS.md (15 decisions with alternatives and reasons, marking alternatives that were actually tried and their measured effect). Each statement was checked against the current functions; the docs state explicitly that remediation order comes only from the operation table (no per-record dependency graph). Linked both from README.md and added docs/ to the zip command. The Mermaid diagram was not rendered locally.
+
+Actions:
+* Created docs/ARCHITECTURE.md, docs/DECISIONS.md; edited README.md
+* Re-read code/agent function inventory and policy/audit/workflow logic to verify statements
+
+Context:
+tool=Claude Code
+model=claude-opus-5-5
+branch=main
+repo_root=/home/stanislaw/hackerrank-orchestrate-october26
+worktree=main
+parent_agent=none
